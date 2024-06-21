@@ -22,28 +22,25 @@ class AutoApiController {
 
     //traemos todos los autos
     public function getAll() {
-
         try {
             // Obtener todos los autos del modelo
             $vehicles = $this->model->getAll();
-            if($vehicles){
+            if ($vehicles) {
                 $response = [
-                "status" => 200,
-                "data" => $vehicles
-               ];
-                $this->view->response($vehicles, 200);
-            //    $this->view->response($tareas, 200);
-
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                // Si hay autos, devolverlas con un código 200 (éxito)
+                $this->view->response($response, 200);
+            } else {
+                // Si no hay autos, devolver un mensaje con un código 404
+                $this->view->response("No hay autos en la base de datos", 404);
             }
-                 // Si hay autos, devolverlas con un código 200 (éxito)
-            else
-                // Si no hay autos, devolver un mensaje con un código 404 (no encontrado)
-                 $this->view->response("No hay autos en la base de datos", 404);
-        } catch (Exception $e) {
-            // En caso de error del servidor, devolver un mensaje con un código 500 (error del servidor)
+        } catch (Exception) {
             $this->view->response("Error de servidor", 500);
         }
     }
+    
 
 // traemos un auto por ID
     public function getAuto($params = null) {
@@ -131,7 +128,7 @@ public function borrarAuto($params = null) {
                 $this->view->response($vehicles, 200);
        
             }else
-                 $this->view->response("No hay autos en la base de datos", 404);
+                $this->view->response("No hay autos en la base de datos", 404);
         
            
         } catch (Exception $e) {
@@ -139,25 +136,35 @@ public function borrarAuto($params = null) {
             }
     }
 
+// Editar un vehiculo
+public function editarVehiculo($params = NULL){
+    $id = $params[':ID'];
+    $vehicle = $this->model->get($id);
 
-    //Editar un vehiculo
-    public function editarVehiculo($params = NULL){
-        $id = $params[':ID'];
-        $vehicle=$this->model->get($id);
-        try {
-            if($vehicle){
-                $lastId = $this->model->edit(
-                    $vechicle->modelo, 
-                    $vechicle->anio, 
-                    $vechicle->precio,
-                    $vechicle->color, 
-                    $vechicle->vendido);
-            }
-        } catch (\Throwable $th) {
-           
+    try {
+        if ($vehicle) {
+            // Obtén los datos enviados en la solicitud
+            $inputData = json_decode(file_get_contents("php://input"));
+
+            // Asignar los datos del vehículo desde la solicitud
+            $modelo = $inputData->modelo ?? $vehicle->modelo;
+            $anio = $inputData->anio ?? $vehicle->anio;
+            $precio = $inputData->precio ?? $vehicle->precio;
+            $color = $inputData->color ?? $vehicle->color;
+            $vendido = $inputData->vendido ?? $vehicle->vendido;
+
+            // Actualizar el vehículo en la base de datos
+            $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
+
+            $this->view->response("Vehículo actualizado correctamente con id: $id", 200);
+        } else {
+            $this->view->response("Vehículo no encontrado", 404);
         }
-
+    } catch (\Throwable $th) {
+        // Manejo de errores
+        $this->view->response("Error al actualizar el vehículo: " . $th->getMessage(), 500);
     }
+}
 
 
 

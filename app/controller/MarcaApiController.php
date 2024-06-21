@@ -68,50 +68,67 @@ class MarcaApiController {
 
     }  
 
-    //Agregar Marca   
- public function addMarca() {
-    $MarcaNueva = $this->getData();
-    $lastId = $this->model->insertar(
-            $MarcaNueva->nombre, 
-            $MarcaNueva->pais_de_origen, 
-            $MarcaNueva->$ano_de_fundacion,
-            $MarcaNueva->descripcion);
-
-    $this->view->response("Se insertó correctamente con id: $lastId", 200);
-
-}
+    public function addMarca() {
+        try {
+            // Obtener los datos enviados para la nueva marca
+            $marcaNueva = $this->getData();
+    
+            // Obtener los datos específicos de la nueva marca
+            $nombre = $marcaNueva->nombre;
+            $pais_de_origen = $marcaNueva->pais_de_origen;
+            $ano_de_fundacion = $marcaNueva->ano_de_fundacion;
+            $descripcion = $marcaNueva->descripcion;
+    
+            // Insertar la nueva marca en la base de datos y obtener el último ID insertado
+            $lastId = $this->model->insertar($nombre, $pais_de_origen, $ano_de_fundacion, $descripcion);
+    
+            // Responder con un mensaje de éxito y el ID de la marca insertada
+            $this->view->response("Se insertó correctamente con id: $lastId", 200);
+    
+        } catch (Exception $e) {
+            // Manejo de errores en caso de excepción
+            $this->view->response("Error al insertar la marca: " . $e->getMessage(), 500);
+        }
+    }
+    
 
 //borrar Marca
-public function borrarMarca($params = null) {
-    $id = $params[':ID'];
-    
-    $marca = $this->model->get($id);
-    if ($marca) {
-        $this->model->delete($id);
-
-        $this->view->response("marca $id, eliminada", 200);
-    } else {
-        $this->view->response("marca $id, no encontrada", 404);
-    }
-}
-
-    //editar marca
-    public function editarMarca($params = NULL){
+    public function borrarMarca($params = null) {
         $id = $params[':ID'];
-        $marca=$this->model->get($id);
-        try {
-            if($marca){
-                $lastId = $this->model->edit(
-                    $marca->nombre, 
-                    $marca->pais_de_origen, 
-                    $marca->ano_de_fundacion,
-                    $marca->descripcion);
-            }
-        } catch (\Throwable $th) {
-       
-        }
+    
+        $marca = $this->model->get($id);
+        if ($marca) {
+            $this->model->delete($id);
 
+            $this->view->response("marca $id, eliminada", 200);
+        } else {
+            $this->view->response("marca $id, no encontrada", 404);
+        }
     }
 
+    public function editarMarca($params = NULL) {
+        try {
+            // Obtener el ID de la marca desde los parámetros
+            $id = $params[':ID'];
+            $marca = $this->model->get($id);
 
+            if ($marca) {
+                $nombre = $marca->nombre;
+                $pais_de_origen = $marca->pais_de_origen; 
+                $ano_de_fundacion = $marca->ano_de_fundacion;
+                $descripcion = $marca->descripcion;
+            // Llamar al método edit en el modelo para actualizar la marca
+                $this->model->edit($id, $nombre, $pais_de_origen, $ano_de_fundacion, $descripcion);
+
+                // Responder con un mensaje de éxito
+                $this->view->response("Marca actualizada correctamente", 200);
+            } else {
+                // Responder con un mensaje de error si la marca no existe
+                $this->view->response("No se encontró la marca", 404);
+            }
+        }   catch (Exception $e) {
+            // Manejo de errores en caso de excepción
+            $this->view->response("Error al editar la marca: " . $e->getMessage(), 500);
+        }
+    }
 }   

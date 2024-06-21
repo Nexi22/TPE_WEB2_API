@@ -31,6 +31,7 @@ class marcaModel extends model {
         $consulta = $db->prepare("INSERT INTO marca (nombre, pais_de_origen, ano_de_fundacion, descripcion) VALUES (?, ?, ?, ?)");
         //EJECUTAS
         $consulta->execute([$nombre, $pais_de_origen, $ano_de_fundacion, $descripcion]);
+        return $db->lastInsertId();
     }
 
     //Borrar una Marca
@@ -44,6 +45,7 @@ class marcaModel extends model {
         $db = $this->createConexion();
         $resultado = $db->prepare("UPDATE marca SET nombre = ?, pais_de_origen = ?, ano_de_fundacion = ?, descripcion = ? WHERE id_marca = ?");
         $resultado->execute([$nombre, $pais_de_origen, $ano_de_fundacion, $descripcion, $id_marca]);
+        return $db->lastInsertId();
     }
 
 

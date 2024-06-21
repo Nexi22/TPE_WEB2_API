@@ -1,11 +1,13 @@
 <?php
-    require_once('libs/Router.php');
-    require_once('app/controller/AutoApiController.php');
-    require_once('app/controller/MarcaApiController.php');
-
-    
+    require_once "libs/Router.php";
+    require_once "app/controller/AutoApiController.php";
+    require_once "app/controller/MarcaApiController.php";
+    require_once "app/controller/UserApiController.php";
 
     $router = new Router();
+    
+
+    ////////// ROUTER DE VEHICULOS /////////////
 
     $router->addRoute('autos', 'GET', 'AutoApiController', 'getAll');//traemos todos los autos
 
@@ -19,11 +21,10 @@
 
     $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAllxMarca');//traer autos por una marca especifica
 
-    $router->addRoute('editAuto/:ID', 'PUT', 'AutoApiController', 'getAllxMarca');//editar auto
+    $router->addRoute('editAuto/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
 
-    //
-    //
-    //router de la tabla Marca
+
+    ////////// ROUTER DE MARCAS /////////////
 
     $router->addRoute('marcas', 'GET', 'MarcaApiController', 'getAll');//traemos todos las marcas
 
@@ -36,3 +37,11 @@
     $router->addRoute('editMarca/:ID', 'PUT', 'MarcaApiController', 'editarMarca');//editar marca
 
     $router->route($_GET["resource"], $_SERVER['REQUEST_METHOD']);
+
+
+    ////////// ROUTER DE USUARIOS /////////////
+
+    $router->addRoute('usuarios', 'GET', 'UserApiController', 'getAll');//traemos todos los usuarios
+
+    $router->addRoute('usuario/:ID', 'DELETE', 'UserApiController', 'deleteUser');//borrar usuario
+
