@@ -20,6 +20,7 @@ class AutoApiController {
         return json_decode($this->data);
     }
 
+    //traemos todos los autos
     public function getAll() {
 
         try {
@@ -44,10 +45,9 @@ class AutoApiController {
         }
     }
 
-
+// traemos un auto por ID
     public function getAuto($params = null) {
         $id = $params[':ID'];
-
         try {
             // Obtiene un auto del modelo
             $vehicle = $this->model->get($id);
@@ -76,7 +76,89 @@ class AutoApiController {
 
     }  
 
-    
+ //Agregar AUTO   
+ public function addAuto() {
+    $autoNuevo = $this->getData();
+    $lastId = $this->model->insertar(
+            $autoNuevo->modelo, 
+            $autoNuevo->anio, 
+            $autoNuevo->precio,
+            $autoNuevo->color, 
+            $autoNuevo->vendido);
+
+    $this->view->response("Se insertó correctamente con id: $lastId", 200);
+
+}
+
+//borrar auto
+public function borrarAuto($params = null) {
+        $id = $params[':ID'];
+        
+        $vehicle = $this->model->get($id);
+        if ($vehicle) {
+            $this->model->delete($id);
+
+            $this->view->response("vehiculo $id, eliminado", 200);
+        } else {
+            $this->view->response("vehiculo $id, no encontrado", 404);
+        }
+    }
+
+    //marcar como vendido un auto 
+    public function autoVendido($params = null) {
+        $id = $params[':ID'];
+        $vehicle = $this->model->get($id);
+        if ($vehicle) {
+            $vendido = $vehicle->vendido;
+            $this->model->vendido($id);
+
+            $this->view->response("auto $vehicle, vendido", 200);
+        } else {
+            $this->view->response("auto $id, no encontrado", 404);
+        }
+    }    
+
+    //traemos todos los vehiculos de una marca (lo hacemos por ID)
+    public function getAllxMarca($params = null){
+        $id = $params[':ID'];
+        $vehicles= $this->model->getAllByMarca($id);
+        try {
+            if($vehicles){
+                $response = [
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                $this->view->response($vehicles, 200);
+       
+            }else
+                 $this->view->response("No hay autos en la base de datos", 404);
+        
+           
+        } catch (Exception $e) {
+            $this->view->response("Error de servidor", 500);
+            }
+    }
+
+
+    //Editar un vehiculo
+    public function editarVehiculo($params = NULL){
+        $id = $params[':ID'];
+        $vehicle=$this->model->get($id);
+        try {
+            if($vehicle){
+                $lastId = $this->model->edit(
+                    $vechicle->modelo, 
+                    $vechicle->anio, 
+                    $vechicle->precio,
+                    $vechicle->color, 
+                    $vechicle->vendido);
+            }
+        } catch (\Throwable $th) {
+           
+        }
+
+    }
+
 
 
 
