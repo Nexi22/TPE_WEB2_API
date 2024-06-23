@@ -11,12 +11,12 @@
     - [Función `editarVehiculo()`](#función-editarvehiculo)
 
 2. [MarcaApiController](#documentacion-marcaapicontroller)
-    -[Funcion `getAll()`](#funcion-getall)
-    -[Funcion `getAllDESC()`](#funcion-getalldesc)
-    -[Funcion `getMarca()`](#funcion-getmarca)
-    -[Funcion `addMarca()`](#funcion-addmarca)
-    -[Funcion `borrarMarca()`](#funcion-borrarmarca)
-    -[Funcion `editarMarca()`](#funcion-editarmarca)
+    - [Funcion `getAll()`](#funcion-getall)
+    - [Funcion `getAllDESC()`](#funcion-getalldesc)
+    - [Funcion `getMarca()`](#funcion-getmarca)
+    - [Funcion `addMarca()`](#funcion-addmarca)
+    - [Funcion `borrarMarca()`](#funcion-borrarmarca)
+    - [Funcion `editarMarca()`](#funcion-editarmarca)
 
 
 3. [UserApiController](#documentación-userapicontroller)
