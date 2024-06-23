@@ -2,10 +2,10 @@
 require_once('app/model/UserModel.php');
 require_once('app/view/JSONView.php');
 
-    class UserApiController {
-        private $model;
-        private $view;
-        private $data;
+class UserApiController {
+    private $model;
+    private $view;
+    private $data;
 
     public function __construct(){
         $this->model = new UserModel();
@@ -86,7 +86,7 @@ require_once('app/view/JSONView.php');
         }  
 
 
-       //borrar Marca
+    //Borrar Usuario
     public function deleteUser($params = null) {
         $id = $params[':ID'];
     
@@ -94,9 +94,9 @@ require_once('app/view/JSONView.php');
         if ($usuario) {
             $this->model->delete($id);
 
-            $this->view->response("usuario $id, eliminada", 200);
+            $this->view->response("usuario $id, eliminado", 200);
         } else {
-            $this->view->response("usuario $id, no encontrada", 404);
+            $this->view->response("usuario $id, no encontrado", 404);
         }
     }
-    }
+}
