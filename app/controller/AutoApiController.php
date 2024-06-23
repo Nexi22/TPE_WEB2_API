@@ -40,6 +40,26 @@ class AutoApiController {
             $this->view->response("Error de servidor", 500);
         }
     }
+
+    public function getAllDESC() {
+        try {
+            // Obtener todos los autos del modelo
+            $vehicles = $this->model->getAllDESC();
+            if ($vehicles) {
+                $response = [
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                // Si hay autos, devolverlas con un código 200 (éxito)
+                $this->view->response($response, 200);
+            } else {
+                // Si no hay autos, devolver un mensaje con un código 404
+                $this->view->response("No hay autos en la base de datos", 404);
+            }
+        } catch (Exception) {
+            $this->view->response("Error de servidor", 500);
+        }
+    }
     
 
 // traemos un auto por ID
@@ -83,7 +103,7 @@ class AutoApiController {
             $autoNuevo->color, 
             $autoNuevo->vendido);
 
-    $this->view->response("Se insertó correctamente con id: $lastId", 200);
+    $this->view->response("Se insertó correctamente con id: $lastId", 201);
 
 }
 
@@ -109,9 +129,9 @@ public function borrarAuto($params = null) {
             $vendido = $vehicle->vendido;
             $this->model->vendido($id);
 
-            $this->view->response("auto $vehicle, vendido", 200);
+            $this->view->response("auto $vehicle, vendido", 201);
         } else {
-            $this->view->response("auto $id, no encontrado", 404);
+            $this->view->response("auto $id, no encontrado", 400);
         }
     }    
 
@@ -156,9 +176,9 @@ public function editarVehiculo($params = NULL){
             // Actualizar el vehículo en la base de datos
             $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
 
-            $this->view->response("Vehículo actualizado correctamente con id: $id", 200);
+            $this->view->response("Vehículo actualizado correctamente con id: $id", 201);
         } else {
-            $this->view->response("Vehículo no encontrado", 404);
+            $this->view->response("Vehículo no encontrado", 400);
         }
     } catch (\Throwable $th) {
         // Manejo de errores

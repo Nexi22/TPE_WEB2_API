@@ -11,6 +11,8 @@
 
     $router->addRoute('autos', 'GET', 'AutoApiController', 'getAll');//traemos todos los autos
 
+    $router->addRoute('autosDESC', 'GET', 'AutoApiController', 'getAllDESC');//traemos todos los autos de forma asc
+
     $router->addRoute('auto/:ID', 'GET', 'AutoApiController', 'getAuto');//traemos un auto
 
     $router->addRoute('auto', 'POST', 'AutoApiController', 'addAuto');//agregamos un auto
@@ -28,6 +30,8 @@
 
     $router->addRoute('marcas', 'GET', 'MarcaApiController', 'getAll');//traemos todos las marcas
 
+    $router->addRoute('marcasDESC', 'GET', 'MarcaApiController', 'getAllDESC');//traemos todos las marcas
+
     $router->addRoute('marca/:ID', 'GET', 'MarcaApiController', 'getMarca');//traemos una marca en especifico
 
     $router->addRoute('marca', 'POST', 'MarcaApiController', 'addMarca');//agregamos una marca
@@ -36,12 +40,16 @@
     
     $router->addRoute('editMarca/:ID', 'PUT', 'MarcaApiController', 'editarMarca');//editar marca
 
-    $router->route($_GET["resource"], $_SERVER['REQUEST_METHOD']);
 
 
     ////////// ROUTER DE USUARIOS /////////////
 
     $router->addRoute('usuarios', 'GET', 'UserApiController', 'getAll');//traemos todos los usuarios
 
+    $router->addRoute('usuariosASC', 'GET', 'UserApiController', 'getAllASC');//traemos todos los usuarios
+
+    $router->addRoute('usuario/:ID', 'GET', 'UserApiController', 'getUsuario');//traemos un usuario
+
     $router->addRoute('usuario/:ID', 'DELETE', 'UserApiController', 'deleteUser');//borrar usuario
 
+    $router->route($_GET["resource"], $_SERVER['REQUEST_METHOD']);

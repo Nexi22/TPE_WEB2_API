@@ -1,8 +1,16 @@
 # https://markdown.es/sintaxis-markdown/
 ## Índice
-1. [TaskApiController](#documentación-taskapicontroller)
-    - [Función `getTasks()`](#función-gettasks)
-    - [Función `getTask()`](#función-gettask)
+1. [AutoApiController](#documentación-autopicontroller)
+    - [Función `getAll()`](#función-getAll)
+    - [Función `getAllDESC()`](#función-getalldesc)
+    - [Función `getAuto()`](#función-getauto)
+    - [Función `addAuto()`](#función-addauto)
+    - [Función `borrarAuto()`](#función-borrarauto)
+    - [Función `autoVendido()`](#función-autovendido)
+    - [Función `getAllxMarca()`](#función-getallxmarca)
+    - [Función `editarVehiculo()`](#función-editarvehiculo)
+
+
 2. [UserApiController](#documentación-userapicontroller)
     - [Función `getAllUsers()`](#función-getallusers)
     - [Función `getUser()`](#función-getuser)
@@ -10,89 +18,88 @@
 
 ___
 
-# Documentación `TaskApiController`
+# Documentación `AutoApiController`
 ## Introducción
-El TaskApiController es una clase encargada de manejar las solicitudes relacionadas con las tareas dentro de nuestra aplicación. Actúa como un intermediario entre el cliente y el modelo de datos, proporcionando una interfaz para interactuar con las tareas a través de varias operaciones CRUD (Crear, Leer, Actualizar, Eliminar). El objetivo principal del TaskApiController es facilitar una gestión eficiente y organizada de las tareas, garantizando que todas las operaciones se realicen de manera coherente y segura.
-A continuación se detallan cada una de sus funciones.
-
-## Función `getTasks()`
+Esta API permite gestionar una colección de vehículos. Se puede obtener información sobre todos los vehículos, obtener un vehículo específico por su ID, agregar nuevos vehículos, borrar vehículos existentes, marcar un vehículo como vendido, obtener todos los vehículos de una marca específica y editar la información de un vehículo.
+## Función `getAll()`
 
 ### Descripción
-La función `getTasks` del controlador obtiene todas las tareas de la base de datos y envía una respuesta adecuada al cliente basado en el resultado.
+Obtiene una lista de todos los vehículos.
 
-### CÓDIGO ESCRITO A MANO (COPY - PASTE DEL CONTROLADOR)
+### CÓDIGO:
 
 ```php
-public function getTasks() {
-    try {
-        // Obtener todas las tareas del modelo
-        $tareas = $this->model->getAll();
-        
-        if ($tareas) {
-            // Si hay tareas, devolverlas con un código 200 (éxito)
-            $response = [
-                "status" => 200,
-                "data" => $tareas
-            ];
-            $this->view->response($response, 200);
-        } else {
-            // Si no hay tareas, devolver un mensaje con un código 404 (no encontrado)
-            $response = [
-                "status" => 404,
-                "message" => "No hay tareas en la base de datos"
-            ];
-            $this->view->response($response, 404);
+public function getAll() {
+        try {
+            // Obtener todos los autos del modelo
+            $vehicles = $this->model->getAll();
+            if ($vehicles) {
+                $response = [
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                // Si hay autos, devolverlas con un código 200 (éxito)
+                $this->view->response($response, 200);
+            } else {
+                // Si no hay autos, devolver un mensaje con un código 404
+                $this->view->response("No hay autos en la base de datos", 404);
+            }
+        } catch (Exception) {
+            $this->view->response("Error de servidor", 500);
         }
-    } catch (Exception $e) {
-        // En caso de error del servidor, devolver un mensaje con un código 500 (error del servidor)
-        $response = [
-            "status" => 500,
-            "message" => "Error de servidor: " . $e->getMessage()
-        ];
-        $this->view->response($response, 500);
     }
-}
 ```
 
-### CÓDIGO GUARDADO COMO IMAGEN
-#### REALIZAR CAPTURA -> GUARDARLA EN CARPETA CORRESPONDIETE
-![Imágen del código de la función getAll](img/img-tasks/getAll.JPG)
 
 ### Retorno
 La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
 
-- **200 OK:** Si se obtuvieron tareas correctamente.
-- **404 Not Found:** Si no hay tareas en la base de datos.
-- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener las tareas.
+### Respuesta Exitosa:
+Estado: **200 OK:** si la peticion fue exitosa y se trajeron todos los vehiculos.
 
-## Ejemplos de uso `http://localhost/proyectos/todo-api/api/tareas`
-### Ejemplo 1: Obtención exitosa de tareas
+### CÓDIGO:
+```php
+$this->view->response($response, 200);
+```
 
-Si hay tareas en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
+### Respuesta Fallida:
+Estado: **404 Not Found:** Si no hay autos en la base de datos.
+
+### CÓDIGO:
+```php
+$this->view->response("No hay autos en la base de datos", 404);
+```
+
+### Respuesta de error del server:
+- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener los autos.
+
+### CÓDIGO:
+```php
+$this->view->response("Error de servidor", 500);
+```
+
+
+## Ejemplos de uso `localhost/TPE_WEB2_API/api/autos`
+### Ejemplo 1: Obtención exitosa de Vehiculos
+
+Si hay vehiculos en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
 ```json
 {
     "status": 200,
-    "data": [
-        {
-            "id": 1,
-            "nombre": "Tarea 1",
-            "descripcion": "Descripción de la tarea 1"
-        },
-        ...
-    ]
+    "data": [ ... ] // Lista de vehículos
 }
+
 ```
 
-### Ejemplo 2: Tareas no encontradas
+### Ejemplo 2: Vehiculos no encontrados
 
-Si no existen tareas en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
+Si no existen vehiculos en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
 ```json
 {
-   {
     "status": 404,
-    "message": "No hay tareas en la base de datos"
-   }
+    "message": "No hay autos en la base de datos"
 }
+
 ```
 
 ### Ejemplo 3: Error de servidor

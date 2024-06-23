@@ -39,6 +39,26 @@ class MarcaApiController {
             $this->view->response("Error de servidor", 500);
         }
     }
+
+    public function getAllDESC(){
+        try {
+            // Obtener todos los autos del modelo
+            $marcas = $this->model->getAllDESC();
+            if($marcas){
+                $response = [
+                "status" => 200,
+                "data" => $marcas
+               ];
+                $this->view->response($marcas, 200);
+          
+            }
+                
+            else
+                 $this->view->response("No hay marcas en la base de datos", 404);
+        } catch (Exception $e) {
+            $this->view->response("Error de servidor", 500);
+        }
+    }
     
     // traemos una marca por ID
     public function getMarca($params = null) {
@@ -56,7 +76,7 @@ class MarcaApiController {
             else{
                 $response = [
                     "status" => 404,
-                    "message" => "No existe la marcaen la base de datos."
+                    "message" => "No existe la marca en la base de datos."
                 ];
                 $this->view->response($response, 404);
 

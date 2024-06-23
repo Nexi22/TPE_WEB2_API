@@ -12,6 +12,14 @@ class marcaModel extends model {
         return $marcas;
     }
 
+    function getAllDESC(){
+        $db = $this->createConexion();
+        $consulta = $db->prepare("SELECT * FROM marca ORDER BY id_marca DESC");
+        $consulta->execute();
+        $marcas = $consulta->fetchAll(PDO::FETCH_OBJ);
+        return $marcas;
+    }
+
     //traemos una marca en especifico
     function get($id){
         //abrimos la conexion;

@@ -13,6 +13,15 @@ class VehicleModel extends model{
         return $vehicles;
     }
 
+    function getAllDESC(){
+        //CREO LA CONEXION Y ENVIO LA CONSULTA A LA DB
+        $db = $this->createConexion();
+        $consulta = $db->prepare("SELECT * FROM auto ORDER BY id_auto DESC");
+        $consulta->execute();
+        $vehicles = $consulta->fetchAll(PDO::FETCH_OBJ);
+        return $vehicles;
+    }
+
     // traemos un auto por ID
     function get($id){
         //abrimos la conexion;

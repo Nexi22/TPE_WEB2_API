@@ -38,24 +38,65 @@ require_once('app/view/JSONView.php');
             }
         }
 
-        public function deleteUser($id) {
+        //Traemos todos los usuarios
+        public function getAllASC() {
             try {
-                //Obtengo un usuario por ID
-                $usuario = $this->model->GetUser($id);
-                if ($usuario) {
+                // Obtener todos los usuarios del modelo
+                $users = $this->model->getAllASC();
+                if ($users) {
                     $response = [
                         "status" => 200,
-                        "data" =>$usuario
+                        "data" => $users
                     ];
-                    //Si se obtiene un usuario, devolver un 200
+                    // Si hay usuarios, devolverlos con un código 200 (éxito)
                     $this->view->response($response, 200);
-                }else{
-                    //Si no se obtuvo ningun usuario, devolver un 404
+                } else {
+                    // Si no hay usuarios, devolver un mensaje con un código 404
                     $this->view->response("No hay usuarios en la base de datos", 404);
                 }
             } catch (Exception) {
-                $this->view->response("Error del servidor", 500);
+                $this->view->response("Error de servidor", 500);
             }
         }
 
+        public function getUsuario($params = null) {
+            $id = $params[':ID'];
+            try {
+                $usuario = $this->model->get($id);
+                if($usuario){
+                    $response = [
+                    "status" => 200,
+                    "message" => $usuario
+                   ];
+                    $this->view->response($response, 200);
+    
+                }
+                else{
+                    $response = [
+                        "status" => 404,
+                        "message" => "No existe el usuario en  la base de datos."
+                    ];
+                    $this->view->response($response, 404);
+    
+                }
+            } catch (Exception $e) {
+                $this->view->response("Error de servidor", 500);
+            }
+    
+        }  
+
+
+       //borrar Marca
+    public function deleteUser($params = null) {
+        $id = $params[':ID'];
+    
+        $usuario = $this->model->get($id);
+        if ($usuario) {
+            $this->model->delete($id);
+
+            $this->view->response("usuario $id, eliminada", 200);
+        } else {
+            $this->view->response("usuario $id, no encontrada", 404);
+        }
+    }
     }

@@ -11,11 +11,29 @@ class UserModel extends model{
         return $usuarios;
     }
 
-    function getUser($id){
+    function getAllASC(){
+        $db = $this->createConexion(); 
+        $consulta = $db->prepare("SELECT * FROM usuario ORDER BY id ASC;");
+        $consulta->execute();
+        $usuarios = $consulta->fetchAll(PDO::FETCH_OBJ);
+        return $usuarios;
+    }
+
+     //traemos una usuario en especifico
+     function get($id){
+        //abrimos la conexion;
         $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM usuario WHERE id = ?");
-        $consulta->execute([$id]);
-        $usuario = $consulta->fetch(PDO::FETCH_OBJ);
+        //Enviar la consulta
+        $sentencia = $db->prepare("SELECT * FROM usuario WHERE id = ?");
+        $sentencia->execute([$id]);
+        $usuario = $sentencia->fetch(PDO::FETCH_OBJ);
         return $usuario;
+    }
+    
+
+    function delete($id){
+        $db = $this->createConexion();
+        $resultado= $db->prepare("DELETE FROM usuario WHERE id = ?");
+        $resultado->execute([$id]); // ejecuta
     }
 }
