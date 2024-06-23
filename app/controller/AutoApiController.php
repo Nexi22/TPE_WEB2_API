@@ -68,14 +68,13 @@ class AutoApiController {
         try {
             // Obtiene un auto del modelo
             $vehicle = $this->model->get($id);
-            // Si existe la tarea, la retorna con un código 200 (éxito)
+            // Si existe el vehiculo, la retorna con un código 200 (éxito)
             if($vehicle){
                 $response = [
                 "status" => 200,
                 "message" => $vehicle
                ];
                 $this->view->response($response, 200);
-            //    $this->view->response($tareas, 200);
 
             }
             else{

@@ -136,63 +136,181 @@ ___
 
 
 
-## Función `getTask()`
+## Función `getAllDESC()`
 
 ### Descripción
-La función `getTask` del controlador obtiene una tarea específica de la base de datos y envía una respuesta adecuada al cliente basado en el resultado.
+La función `getAllDESC` del controlador obtiene todos los vehiculos  de la base de datos y envía una respuesta de todos los vehiculos ordenados de forma DESCENDENTE por ID.
 
 ### CÓDIGO ESCRITO A MANO (COPY - PASTE DEL CONTROLADOR)
 
 ```php
-public function getTask($params = null) {
-        $id = $params[':ID'];
-
+public function getAllDESC() {
         try {
-            // Obtiene una tarea del modelo
-            $tarea = $this->model->get($id);
-            // Si existe la tarea, la retorna con un código 200 (éxito)
-            if($tarea){
+            // Obtener todos los autos del modelo
+            $vehicles = $this->model->getAllDESC();
+            if ($vehicles) {
                 $response = [
-                "status" => 200,
-                "data" => $tarea
-               ];
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                // Si hay autos, devolverlas con un código 200 (éxito)
                 $this->view->response($response, 200);
+            } else {
+                // Si no hay autos, devolver un mensaje con un código 404
+                $this->view->response("No hay autos en la base de datos", 404);
             }
-            else
-                // Si exite la tarea, retorna un mensaje con un código 404 (no encontrado)
-                 $this->view->response("No existe la tarea con id: $id", 404);
-        } catch (Exception $e) {
-            // En caso de error del servidor, devolver un mensaje con un código 500 (error del servidor)
+        } catch (Exception) {
             $this->view->response("Error de servidor", 500);
         }
-
-    }  
+    }
 ```
-### Parámetros
-**`$params (array)`: Un array asociativo que contiene los parámetros de la solicitud. En este caso, se espera que contenga '`:ID`', el identificador de la tarea que se desea obtener.**
+
 
 ### Retorno
 La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
 
-- **200 OK:** Si se obtuvieron tareas correctamente.
-- **404 Not Found:** Si no hay tareas en la base de datos.
-- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener las tareas.
+### Respuesta Exitosa:
+Estado: **200 OK:** si la peticion fue exitosa y se trajeron todos los vehiculos ordenados descentemente.
 
-## Ejemplos de uso `http://localhost/proyectos/todo-api/api/tareas/1`
-### Ejemplo 1: Obtención exitosa de la tarea
+### CÓDIGO:
+```php
+$this->view->response($response, 200);
+```
 
-Si la tarea con el ID proporcionado existe, la función enviará una respuesta con código 200 y la tarea en formato JSON:
+### Respuesta Fallida:
+Estado: **404 Not Found:** Si no hay autos en la base de datos.
+
+### CÓDIGO:
+```php
+$this->view->response("No hay autos en la base de datos", 404);
+```
+
+### Respuesta de error del server:
+- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener los autos.
+
+### CÓDIGO:
+```php
+$this->view->response("Error de servidor", 500);
+```
+
+## Ejemplos de uso `localhost/TPE_WEB2_API/api/autosDESC`
+### Ejemplo 1: Obtención exitosa de Vehiculos
+
+Si hay vehiculos en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
 ```json
 {
     "status": 200,
-    "data": [
-        {
-            "id": 1,
-            "nombre": "Tarea 1",
-            "descripcion": "Descripción de la tarea 1"
-        }
-    ]
+    "data": [ ... ] // Lista de vehículos ordenados descendentemente
 }
+
+```
+
+### Ejemplo 2: Vehiculos no encontrados
+
+Si no existen vehiculos en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
+```json
+{
+    "status": 404,
+    "message": "No hay autos en la base de datos"
+}
+
+```
+
+### Ejemplo 3: Error de servidor
+
+Si ocurre un error del servidor, la función enviará una respuesta con código 500 y un mensaje de error:
+
+```json
+{
+    "status": 500,
+    "message": "Error de servidor: [detalles del error]"
+}
+```
+
+### Notas 
+
+- **La inclusión del mensaje de excepción (`$e->getMessage()`) en la respuesta de error del servidor puede ser útil   para depuración, pero puede exponer detalles sensibles del servidor. Considera esta práctica con cuidado, especialmente en entornos de producción.** 
+- **Asegúrate de manejar adecuadamente las excepciones y errores en el modelo y la vista para evitar problemas inesperados.** 
+
+
+
+___
+
+## Función `getAuto()`
+
+### Descripción
+La función `getAuto` del controlador obtiene un vehiculo específico de la base de datos y envía una respuesta adecuada al cliente basado en el resultado.
+
+### CÓDIGO ESCRITO A MANO (COPY - PASTE DEL CONTROLADOR)
+
+```php
+ public function getAuto($params = null) {
+        $id = $params[':ID'];
+        try {
+            $vehicle = $this->model->get($id);
+            if($vehicle){
+                $response = [
+                "status" => 200,
+                "message" => $vehicle
+               ];
+                $this->view->response($response, 200);
+
+            }
+            else{
+                $response = [
+                    "status" => 404,
+                    "message" => "No existe el auto en la base de datos."
+                ];
+                $this->view->response($response, 404);
+
+            }
+        } catch (Exception $e) {
+            $this->view->response("Error de servidor", 500);
+        }
+
+    }  
+ 
+```
+### Parámetros
+**`$params (array)`: Un array asociativo que contiene los parámetros de la solicitud. En este caso, se espera que contenga '`:ID`', el identificador del vehiculo que se desea obtener.**
+
+### Retorno
+La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
+
+### Respuesta Exitosa:
+Estado: **200 OK:** si la peticion fue exitosa y se trajeron todos los vehiculos ordenados descentemente.
+
+### CÓDIGO:
+```php
+$this->view->response($response, 200);
+```
+
+### Respuesta Fallida:
+Estado: **404 Not Found:** Si no hay autos en la base de datos.
+
+### CÓDIGO:
+```php
+$this->view->response("No hay autos en la base de datos", 404);
+```
+
+### Respuesta de error del server:
+- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener los autos.
+
+### CÓDIGO:
+```php
+$this->view->response("Error de servidor", 500);
+```
+
+## Ejemplos de uso `localhost/TPE_WEB2_API/api/auto`
+### Ejemplo 1: Obtención exitosa del Vehiculo
+
+Si el vehiculo con el ID proporcionado existe, la función enviará una respuesta con código 200 y la tarea en formato JSON:
+```json
+{
+    "status": 200,
+    "message": { ... } // Información del vehículo
+}
+
 ```
 
 ### Ejemplo 2: Tarea no encontradas
@@ -200,11 +318,118 @@ Si la tarea con el ID proporcionado existe, la función enviará una respuesta c
 Si no existe una tarea con el ID proporcionado, la función enviará una respuesta con código 404 y un mensaje de error:
 ```json
 {
-   {
     "status": 404,
-    "message": "No existe la tarea con id: 1"
-   }
+    "message": "No existe el auto en la base de datos."
 }
+
+```
+
+### Ejemplo 3: Error de servidor
+
+Si ocurre un error del servidor, la función enviará una respuesta con código 500 y un mensaje de error:
+
+```json
+{
+    "status": 500,
+    "message": "Error de servidor: [detalles del error]"
+}
+```
+
+### Notas 
+
+- **La inclusión del mensaje de excepción (`$e->getMessage()`) en la respuesta de error del servidor puede ser útil   para depuración, pero puede exponer detalles sensibles del servidor. Considera esta práctica con cuidado, especialmente en entornos de producción.** 
+- **Asegúrate de manejar adecuadamente las excepciones y errores en el modelo y la vista para evitar problemas inesperados.** 
+
+
+
+___
+
+## Función `addAuto()`
+
+### Descripción
+La función `addAuto` del controlador crea un nuevo vehiculo pasandole todos la descripcion del mismo.
+
+### CÓDIGO ESCRITO A MANO (COPY - PASTE DEL CONTROLADOR)
+
+```php
+ public function getAuto($params = null) {
+        $id = $params[':ID'];
+        try {
+            $vehicle = $this->model->get($id);
+            if($vehicle){
+                $response = [
+                "status" => 200,
+                "message" => $vehicle
+               ];
+                $this->view->response($response, 200);
+
+            }
+            else{
+                $response = [
+                    "status" => 404,
+                    "message" => "No existe el auto en la base de datos."
+                ];
+                $this->view->response($response, 404);
+
+            }
+        } catch (Exception $e) {
+            $this->view->response("Error de servidor", 500);
+        }
+
+    }  
+ 
+```
+### Parámetros
+**`$params (array)`: Un array asociativo que contiene los parámetros de la solicitud. En este caso, se espera que contenga '`:ID`', el identificador del vehiculo que se desea obtener.**
+
+### Retorno
+La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
+
+### Respuesta Exitosa:
+Estado: **200 OK:** si la peticion fue exitosa y se trajeron todos los vehiculos ordenados descentemente.
+
+### CÓDIGO:
+```php
+$this->view->response($response, 200);
+```
+
+### Respuesta Fallida:
+Estado: **404 Not Found:** Si no hay autos en la base de datos.
+
+### CÓDIGO:
+```php
+$this->view->response("No hay autos en la base de datos", 404);
+```
+
+### Respuesta de error del server:
+- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener los autos.
+
+### CÓDIGO:
+```php
+$this->view->response("Error de servidor", 500);
+```
+
+## Ejemplos de uso `localhost/TPE_WEB2_API/api/auto`
+### Ejemplo 1: Obtención exitosa del Vehiculo
+
+Si el vehiculo con el ID proporcionado existe, la función enviará una respuesta con código 200 y la tarea en formato JSON:
+```json
+{
+    "status": 200,
+    "message": { ... } // Información del vehículo
+}
+
+```
+
+### Ejemplo 2: Tarea no encontradas
+
+Si no existe una tarea con el ID proporcionado, la función enviará una respuesta con código 404 y un mensaje de error:
+```json
+{
+    "status": 404,
+    "message": "No existe el auto en la base de datos."
+}
+
 ```
 
 ### Ejemplo 3: Error de servidor
@@ -228,222 +453,44 @@ Si ocurre un error del servidor, la función enviará una respuesta con código 
 ___
 
 
-# Documentación `MarcaApiController`
-## Introducción
-La clase MarcaApiController es una parte esencial de una API desarrollada en PHP que gestiona la información relacionada con las marcas de automóviles. Esta clase actúa como un controlador que maneja las solicitudes HTTP, interactúa con el modelo de datos (marcaModel) para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar), y utiliza una vista (JSONView) para devolver las respuestas en formato JSON. A continuación, se presenta una descripción detallada de la clase y sus métodos:
-## Función `getAll()`
+
+## Función `getAllxMarca()`
 
 ### Descripción
-Obtiene una lista de todas las marcas existentes en la base de datos.
+La función `getAllxMarca` del controlador   trae todos los autos que tengan el mismo id que la marca
 
-### CÓDIGO:
+### CÓDIGO ESCRITO A MANO (COPY - PASTE DEL CONTROLADOR)
 
 ```php
-    public function getAll(){
-        try {
-            // Obtener todos los autos del modelo
-            $marcas = $this->model->getAll();
-            if($marcas){
-                $response = [
-                "status" => 200,
-                "data" => $marcas
-               ];
-                $this->view->response($marcas, 200);
-          
-            }
-                
-            else
-                 $this->view->response("No hay marcas en la base de datos", 404);
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
-        }
-    }
-```
-## Ejemplos de uso `localhost/TPE_WEB2_API/api/marcas`
-
-### Retorno
-La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
-
-### Respuesta Exitosa:
-Estado: **200 OK:** si la peticion fue exitosa y se trajeron todas las marcas.
-
-### CÓDIGO:
-```php
-$this->view->response($marcas, 200);
-```
-
-### Respuesta Fallida:
-Estado: **404 Not Found:** Si no hay marcas en la base de datos.
-
-### CÓDIGO:
-```php
-$this->view->response("No hay marcas en la base de datos", 404);
-```
-
-### Respuesta de error del server:
-- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener las marcas.
-
-### CÓDIGO:
-```php
-$this->view->response("Error de servidor", 500);
-
-```
-Si hay marcas en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
-```json
-{
-    "status": 200,
-    "data": [ ... ] // Lista de marcas
-}
-
-```
-
-### Ejemplo 2: Vehiculos no encontrados
-
-Si no existen marcas en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
-```json
-{
-    "status": 404,
-    "message": "No hay marcas en la base de datos"
-}
-
-```
-
-### Ejemplo 3: Error de servidor
-
-Si ocurre un error del servidor, la función enviará una respuesta con código 500 y un mensaje de error:
-
-```json
-{
-    "status": 500,
-    "message": "Error de servidor: [detalles del error]"
-}
-```
-## Función `getAllDESC()`
-
-### Descripción
-Obtiene una lista de todos los vehículos de forma descendente. Para esto se realizo el ID de la marca.
-
-### CÓDIGO:
-```php
-    public function getAllDESC(){
-        try {
-            // Obtener todos los autos del modelo
-            $marcas = $this->model->getAllDESC();
-            if($marcas){
-                $response = [
-                "status" => 200,
-                "data" => $marcas
-               ];
-                $this->view->response($marcas, 200);
-          
-            }
-                
-            else
-                 $this->view->response("No hay marcas en la base de datos", 404);
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
-        }
-    }
-```
-## Ejemplos de uso `localhost/TPE_WEB2_API/api/marcasDESC`
-
-### Retorno
-La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
-
-### Respuesta Exitosa:
-Estado: **200 OK:** si la peticion fue exitosa y se trajeron todas las marcas de forma descendente.
-
-### CÓDIGO:
-```php
-$this->view->response($marcas, 200);
-```
-
-### Respuesta Fallida:
-Estado: **404 Not Found:** Si no hay marcas en la base de datos.
-
-### CÓDIGO:
-```php
-$this->view->response("No hay marcas en la base de datos", 404);
-```
-
-### Respuesta de error del server:
-- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener las marcas.
-
-### CÓDIGO:
-```php
-$this->view->response("Error de servidor", 500);
-
-```
-Si hay marcas en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
-```json
-{
-    "status": 200,
-    "data": [ ... ] // Lista de marcas en forma descendente
-}
-
-```
-
-### Ejemplo 2: Marcas no encontradas
-
-Si no existen marcas en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
-```json
-{
-    "status": 404,
-    "message": "No hay marcas en la base de datos"
-}
-
-```
-
-### Ejemplo 3: Error de servidor
-
-Si ocurre un error del servidor, la función enviará una respuesta con código 500 y un mensaje de error:
-
-```json
-{
-    "status": 500,
-    "message": "Error de servidor: [detalles del error]"
-}
-```
-## Función `getMarca()`
-
-### Descripción
-Como resultado de esta funcion, se obtiene una marca en especifico. Para ello, se necesita especificar en la URL el ID.
-
-### CÓDIGO:
-```php
-    public function getMarca($params = null) {
+ public function getAllxMarca($params = null){
         $id = $params[':ID'];
+        $vehicles= $this->model->getAllByMarca($id);
         try {
-            $marca = $this->model->get($id);
-            if($marca){
+            if($vehicles){
                 $response = [
-                "status" => 200,
-                "message" => $marca
-               ];
-                $this->view->response($response, 200);
-
-            }
-            else{
-                $response = [
-                    "status" => 404,
-                    "message" => "No existe la marca en la base de datos."
+                    "status" => 200,
+                    "data" => $vehicles
                 ];
-                $this->view->response($response, 404);
-
-            }
+                $this->view->response($vehicles, 200);
+       
+            }else
+                $this->view->response("No hay autos en la base de datos", 404);
+        
+           
         } catch (Exception $e) {
-            // En caso de error del servidor, devolver un mensaje con un código 500 (error del servidor)
             $this->view->response("Error de servidor", 500);
-        }
+            }
     }  
+ 
 ```
-## Ejemplos de uso `localhost/TPE_WEB2_API/api/marca/:ID`
+### Parámetros
+**`$params (array)`: Un array asociativo que contiene los parámetros de la solicitud. En este caso, se espera que contenga '`:ID`', el identificador del vehiculo que se desea obtener.**
 
 ### Retorno
 La función no retorna ningún valor directamente. En su lugar, envía una respuesta al cliente utilizando el objeto `view`. Los posibles códigos de estado de respuesta son:
 
 ### Respuesta Exitosa:
-Estado: **200 OK:** si la peticion fue exitosa y se trajo la marca especificada.
+Estado: **200 OK:** si la peticion fue exitosa y se trajeron todos los vehiculos ordenados descentemente.
 
 ### CÓDIGO:
 ```php
@@ -451,36 +498,40 @@ $this->view->response($response, 200);
 ```
 
 ### Respuesta Fallida:
-Estado: **404 Not Found:** Si no existe la marca en la base de datos.
+Estado: **404 Not Found:** Si no hay autos en la base de datos.
 
 ### CÓDIGO:
 ```php
-$this->view->response("No hay marcas en la base de datos", 404);
+$this->view->response("No hay autos en la base de datos", 404);
 ```
 
 ### Respuesta de error del server:
-- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener las marcas.
+- **500 Internal Server Error:** Si ocurre un error del servidor al intentar obtener los autos.
 
 ### CÓDIGO:
 ```php
-$this->view->response($response, 404);
+$this->view->response("Error de servidor", 500);
 ```
-Si hay marcas en la base de datos, la función enviará una respuesta con código 200 y las tareas en formato JSON:
+
+## Ejemplos de uso 'localhost/TPE_WEB2_API/api/autos/2'
+### Ejemplo 1: Obtención exitosa del Vehiculo
+
+Si el vehiculo con el id_marca proporcionado existe, la función enviará una respuesta con código 200 y el auto en formato JSON:
 ```json
 {
     "status": 200,
-    "data": [ ... ] // Muestra la marca
+    "message": { ... } // Información del vehículo
 }
 
 ```
 
-### Ejemplo 2: Marca no encontrada
+### Ejemplo 2: si el id no existe no encontradas
 
-Si no existen marcas en la base de datos, la función enviará una respuesta con código 404 y un mensaje de error:
+Si no existe una tarea con el ID proporcionado, la función enviará una respuesta con código 404 y un mensaje de error:
 ```json
 {
     "status": 404,
-    "message": "No existe la marca en la base de datos."
+    "message": "No existe el auto en la base de datos."
 }
 
 ```
@@ -496,53 +547,14 @@ Si ocurre un error del servidor, la función enviará una respuesta con código 
 }
 ```
 
+### Notas 
+
+- **La inclusión del mensaje de excepción (`$e->getMessage()`) en la respuesta de error del servidor puede ser útil   para depuración, pero puede exponer detalles sensibles del servidor. Considera esta práctica con cuidado, especialmente en entornos de producción.** 
+- **Asegúrate de manejar adecuadamente las excepciones y errores en el modelo y la vista para evitar problemas inesperados.** 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+___
 
 
 # Documentación `UserApiController`
