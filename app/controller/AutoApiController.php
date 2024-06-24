@@ -23,23 +23,40 @@ class AutoApiController {
     //traemos todos los autos
     public function getAll() {
         try {
-            // Obtener todos los autos del modelo
-            $vehicles = $this->model->getAll();
+            // Obtener parámetros de paginación de la solicitud
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
+    
+            // Calcular el desplazamiento (offset) para la consulta SQL
+            $offset = ($page - 1) * $pageSize;
+    
+            // Obtener los autos paginados del modelo
+            $vehicles = $this->model->getPaginated($offset, $pageSize);
+    
+            // Obtener el número total de autos para calcular el total de páginas
+            $totalVehicles = $this->model->countAll();
+            $totalPages = ceil($totalVehicles / $pageSize);
+    
             if ($vehicles) {
                 $response = [
                     "status" => 200,
-                    "data" => $vehicles
+                    "data" => $vehicles,
+                    "totalVehicles" => $totalVehicles,
+                    "totalPages" => $totalPages,
+                    "currentPage" => $page,
+                    "pageSize" => $pageSize
                 ];
-                // Si hay autos, devolverlas con un código 200 (éxito)
+                // Si hay autos, devolverlos con un código 200 (éxito)
                 $this->view->response($response, 200);
             } else {
                 // Si no hay autos, devolver un mensaje con un código 404
                 $this->view->response("No hay autos en la base de datos", 404);
             }
-        } catch (Exception) {
-            $this->view->response("Error de servidor", 500);
+        } catch (Exception $e) {
+            $this->view->response("Error de servidor: ", 500);
         }
     }
+    
 
     public function getAllDESC() {
         try {
@@ -92,19 +109,24 @@ class AutoApiController {
 
     }  
 
- //Agregar AUTO   
- public function addAuto() {
-    $autoNuevo = $this->getData();
-    $lastId = $this->model->insertar(
+    //AGREGAR AUTO A LA BASE DE DATOS  
+    public function addAuto() {
+        $autoNuevo = $this->getData();
+    
+        $lastId = $this->model->insertar(
             $autoNuevo->modelo, 
             $autoNuevo->anio, 
             $autoNuevo->precio,
             $autoNuevo->color, 
-            $autoNuevo->vendido);
-
-    $this->view->response("Se insertó correctamente con id: $lastId", 201);
-
-}
+            $autoNuevo->id_marca 
+        );
+        if ($lastId) {
+            $this->view->response("Se insertó  el vehiculo correctamente con id: $lastId", 201);
+        } else {
+            $this->view->response("Error al insertar el registro", 500);
+        }
+    }
+    
 
 //borrar auto
 public function borrarAuto($params = null) {
@@ -135,58 +157,53 @@ public function borrarAuto($params = null) {
     }    
 
     //traemos todos los vehiculos de una marca (lo hacemos por ID)
-    public function getAllxMarca($params = null){
+    public function getAllxMarca($params = null) {
         $id = $params[':ID'];
-        $vehicles= $this->model->getAllByMarca($id);
+        $vehicles = $this->model->getAllByMarca($id);
         try {
-            if($vehicles){
+            if ($vehicles) {
                 $response = [
                     "status" => 200,
                     "data" => $vehicles
                 ];
-                $this->view->response($vehicles, 200);
-       
-            }else
-                $this->view->response("No hay autos en la base de datos", 404);
-        
-           
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
+                $this->view->response($response, 200);
+            } else {
+                $this->view->response(["status" => 404, "message" => "No hay autos en la base de datos"], 404);
             }
-    }
-
-// Editar un vehiculo
-public function editarVehiculo($params = NULL){
-    $id = $params[':ID'];
-    $vehicle = $this->model->get($id);
-
-    try {
-        if ($vehicle) {
-            // Obtén los datos enviados en la solicitud
-            $inputData = json_decode(file_get_contents("php://input"));
-
-            // Asignar los datos del vehículo desde la solicitud
-            $modelo = $inputData->modelo ?? $vehicle->modelo;
-            $anio = $inputData->anio ?? $vehicle->anio;
-            $precio = $inputData->precio ?? $vehicle->precio;
-            $color = $inputData->color ?? $vehicle->color;
-            $vendido = $inputData->vendido ?? $vehicle->vendido;
-
-            // Actualizar el vehículo en la base de datos
-            $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
-
-            $this->view->response("Vehículo actualizado correctamente con id: $id", 201);
-        } else {
-            $this->view->response("Vehículo no encontrado", 400);
+        } catch (Exception $e) {
+            $this->view->response(["status" => 500, "message" => "Error de servidor"], 500);
         }
-    } catch (\Throwable $th) {
-        // Manejo de errores
-        $this->view->response("Error al actualizar el vehículo: " . $th->getMessage(), 500);
     }
-}
+    
 
+    // Editar un vehiculo
+    public function editarVehiculo($params = NULL){
+        $id = $params[':ID'];
+        $vehicle = $this->model->get($id);
 
+        try {
+            if ($vehicle) {
+                // Obtén los datos enviados en la solicitud
+                $inputData = json_decode(file_get_contents("php://input"));
 
+                $modelo = $inputData->modelo ?? $vehicle->modelo;
 
-
+                // Asignar los datos del vehículo desde la solicitud
+                $precio = $inputData->precio ?? $vehicle->precio;
+                $color = $inputData->color ?? $vehicle->color;
+                $vendido = $inputData->vendido ?? $vehicle->vendido;
+                $anio = $inputData->anio ?? $vehicle->anio;
+                
+                // Actualizar el vehículo en la base de datos
+                $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
+                $this->view->response("Vehículo actualizado correctamente con id: $id", 201);
+                
+            } else {
+                $this->view->response("Vehículo no encontrado", 400);
+            }
+        } catch (\Throwable $th) {
+            // Manejo de errores
+            $this->view->response("Error al actualizar el vehículo: " . $th->getMessage(), 500);
+        }
+    }
 }    

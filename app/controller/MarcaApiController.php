@@ -20,25 +20,39 @@ class MarcaApiController {
     }
 
     //traemos todas las marcas
-    public function getAll(){
+    public function getAll() {
         try {
-            // Obtener todos los autos del modelo
-            $marcas = $this->model->getAll();
-            if($marcas){
+            // Obtener parámetros de paginación de la solicitud
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
+    
+            // Calcular el desplazamiento (offset) para la consulta SQL
+            $offset = ($page - 1) * $pageSize;
+    
+            // Obtener las marcas paginadas del modelo
+            $marcas = $this->model->getPaginated($offset, $pageSize);
+    
+            // Obtener el número total de marcas para calcular el total de páginas
+            $totalMarcas = $this->model->countAll();
+            $totalPages = ceil($totalMarcas / $pageSize);
+    
+            if ($marcas) {
                 $response = [
-                "status" => 200,
-                "data" => $marcas
-               ];
-                $this->view->response($marcas, 200);
-          
+                    "status" => 200,
+                    "data" => $marcas,
+                    "totalMarcas" => $totalMarcas,
+                    "totalPages" => $totalPages,
+                    "currentPage" => $page,
+                    "pageSize" => $pageSize
+                ];
+                $this->view->response($response, 200);
+            } else {
+                $this->view->response("No hay marcas en la base de datos", 404);
             }
-                
-            else
-                 $this->view->response("No hay marcas en la base de datos", 404);
         } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
+            $this->view->response("Error de servidor: " . $e->getMessage(), 500);
         }
-    }
+    }    
 
     public function getAllDESC(){
         try {

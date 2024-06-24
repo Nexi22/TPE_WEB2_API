@@ -3,7 +3,26 @@ require_once "app/model/model.php";
 
 class VehicleModel extends model{
 
-       //traemos todos los autos
+        // Método para obtener los vehiculos paginados
+    public function getPaginated($offset, $limit) {
+        // Crear la conexión y preparar la consulta con LIMIT y OFFSET
+        $db = $this->createConexion();
+        $consulta = $db->prepare("SELECT * FROM auto LIMIT :limit OFFSET :offset");
+        $consulta->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $consulta->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $consulta->execute();
+        return $consulta->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+    // Método para contar el número total de autos
+    public function countAll() {
+        // Crear la conexión y preparar la consulta para contar registros
+        $db = $this->createConexion();
+        $consulta = $db->query("SELECT COUNT(*) as total FROM auto");
+        return $consulta->fetch(PDO::FETCH_OBJ)->total;
+    }
+
+    //traemos todos los autos
     function getAll(){
         //CREO LA CONEXION Y ENVIO LA CONSULTA A LA DB
         $db = $this->createConexion();
@@ -35,11 +54,21 @@ class VehicleModel extends model{
     
 
     //Agregar AUTO   
-    function insertar($modelo, $anio, $precio, $color, $id){
+    function insertar($modelo, $anio, $precio, $color, $id) {
+        try {
             $db = $this->createConexion();
             $consulta = $db->prepare("INSERT INTO auto (modelo, anio, precio, color, vendido, id_marca) VALUES (?, ?, ?, ?, ?, ?)");
             $consulta->execute([$modelo, $anio, $precio, $color, 0, $id]);
+    
+            // Retornar el ID del último  insertado
+            return $db->lastInsertId();
+        } catch (PDOException $e) {
+            // Manejo de excepciones
+            error_log("Error en la inserción: " . $e->getMessage());
+            return false;
         }
+    }
+    
 
     //Borrar un vehiculo
     function delete($id){
@@ -68,12 +97,11 @@ class VehicleModel extends model{
     
 
 
-    // editamos 
-     
-    function edit($modelo, $anio, $precio, $color, $id) {
+    // editar un vehiculo
+    function edit($id, $modelo, $anio, $precio, $color, $vendido) {
         $db = $this->createConexion();
         $resultado = $db->prepare("UPDATE auto SET modelo = ?, anio = ?, precio = ?, color = ?  WHERE id_auto = ?");
-        $resultado->execute([$modelo, $anio, $precio, $color, $id]);
+        $resultado->execute([$id, $modelo, $anio, $precio, $color, $vendido]);
     }
 
  

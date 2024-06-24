@@ -3,6 +3,23 @@ require_once "app/model/model.php";
 
 class marcaModel extends model {
     
+    // Método para obtener las marcas paginadas
+    public function getPaginated($offset, $limit) {
+        $db = $this->createConexion();
+        $consulta = $db->prepare("SELECT * FROM marca LIMIT :limit OFFSET :offset");
+        $consulta->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $consulta->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $consulta->execute();
+        return $consulta->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+    // Método para contar el número total de marcas
+    public function countAll() {
+        $db = $this->createConexion();
+        $consulta = $db->query("SELECT COUNT(*) as total FROM marca");
+        return $consulta->fetch(PDO::FETCH_OBJ)->total;
+    }
+    
    //traemos todas las marcas
     function getAll(){
         $db = $this->createConexion();

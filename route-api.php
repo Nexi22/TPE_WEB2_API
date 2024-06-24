@@ -7,11 +7,11 @@
     $router = new Router();
     
 
-    ////////// ROUTER DE VEHICULOS /////////////
+    ////////// ROUTE DE VEHICULOS /////////////
 
     $router->addRoute('autos', 'GET', 'AutoApiController', 'getAll');//traemos todos los autos
 
-    $router->addRoute('autosDESC', 'GET', 'AutoApiController', 'getAllDESC');//traemos todos los autos de forma asc
+    $router->addRoute('autosDESC', 'GET', 'AutoApiController', 'getAllDESC');//traemos todos los autos de forma ascendente
 
     $router->addRoute('auto/:ID', 'GET', 'AutoApiController', 'getAuto');//traemos un auto
 
@@ -26,11 +26,11 @@
     $router->addRoute('editAuto/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
 
 
-    ////////// ROUTER DE MARCAS /////////////
+    ////////// ROUTE DE MARCAS /////////////
 
     $router->addRoute('marcas', 'GET', 'MarcaApiController', 'getAll');//traemos todos las marcas
 
-    $router->addRoute('marcasDESC', 'GET', 'MarcaApiController', 'getAllDESC');//traemos todos las marcas
+    $router->addRoute('marcasDESC', 'GET', 'MarcaApiController', 'getAllDESC');//traemos todos las marcas de forma descendente
 
     $router->addRoute('marca/:ID', 'GET', 'MarcaApiController', 'getMarca');//traemos una marca en especifico
 
@@ -42,13 +42,15 @@
 
 
 
-    ////////// ROUTER DE USUARIOS /////////////
+    ////////// ROUTE DE USUARIOS /////////////
 
     $router->addRoute('usuarios', 'GET', 'UserApiController', 'getAll');//traemos todos los usuarios
 
-    $router->addRoute('usuariosASC', 'GET', 'UserApiController', 'getAllASC');//traemos todos los usuarios
+    $router->addRoute('usuariosASC', 'GET', 'UserApiController', 'getAllASC');//traemos todos los usuarios de forma ascendente
 
     $router->addRoute('usuario/:ID', 'GET', 'UserApiController', 'getUsuario');//traemos un usuario
+
+    $router->addRoute('addUsuario', 'POST', 'UserApiController', 'newUser'); //añade un usuario a la base de datos
 
     $router->addRoute('usuario/:ID', 'DELETE', 'UserApiController', 'deleteUser');//borrar usuario
 
