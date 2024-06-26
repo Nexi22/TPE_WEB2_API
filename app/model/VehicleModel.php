@@ -23,19 +23,10 @@ class VehicleModel extends model{
     }
 
     //traemos todos los autos
-    function getAll(){
+    function getAll($orderBy, $orderDir){
         //CREO LA CONEXION Y ENVIO LA CONSULTA A LA DB
         $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM auto");
-        $consulta->execute();
-        $vehicles = $consulta->fetchAll(PDO::FETCH_OBJ);
-        return $vehicles;
-    }
-
-    function getAllDESC(){
-        //CREO LA CONEXION Y ENVIO LA CONSULTA A LA DB
-        $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM auto ORDER BY id_auto DESC");
+        $consulta = $db->prepare("SELECT * FROM auto ORDER BY $orderBy $orderDir");
         $consulta->execute();
         $vehicles = $consulta->fetchAll(PDO::FETCH_OBJ);
         return $vehicles;
@@ -100,8 +91,8 @@ class VehicleModel extends model{
     // editar un vehiculo
     function edit($id, $modelo, $anio, $precio, $color, $vendido) {
         $db = $this->createConexion();
-        $resultado = $db->prepare("UPDATE auto SET modelo = ?, anio = ?, precio = ?, color = ?  WHERE id_auto = ?");
-        $resultado->execute([$id, $modelo, $anio, $precio, $color, $vendido]);
+        $resultado = $db->prepare("UPDATE auto SET modelo = ?, anio = ?, precio = ?, color = ?, vendido = ?  WHERE id_auto = ?");
+        $resultado->execute([$modelo, $anio, $precio, $color, $vendido, $id]);
     }
 
  

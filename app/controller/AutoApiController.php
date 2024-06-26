@@ -23,28 +23,17 @@ class AutoApiController {
     //traemos todos los autos
     public function getAll() {
         try {
-            // Obtener parámetros de paginación de la solicitud
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
-    
-            // Calcular el desplazamiento (offset) para la consulta SQL
-            $offset = ($page - 1) * $pageSize;
-    
-            // Obtener los autos paginados del modelo
-            $vehicles = $this->model->getPaginated($offset, $pageSize);
-    
-            // Obtener el número total de autos para calcular el total de páginas
-            $totalVehicles = $this->model->countAll();
-            $totalPages = ceil($totalVehicles / $pageSize);
+            $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : 'nombre';
+            $orderDir = isset($_GET['orderDir']) ? strtoupper($_GET['orderDir']) : 'ASC';
+            if ($orderDir != 'ASC' && $orderDir != 'DESC') {
+                $orderDir = 'ASC';
+            }
+            $vehicles = $this->model->getAll($orderBy, $orderDir);
     
             if ($vehicles) {
                 $response = [
                     "status" => 200,
                     "data" => $vehicles,
-                    "totalVehicles" => $totalVehicles,
-                    "totalPages" => $totalPages,
-                    "currentPage" => $page,
-                    "pageSize" => $pageSize
                 ];
                 // Si hay autos, devolverlos con un código 200 (éxito)
                 $this->view->response($response, 200);
@@ -56,28 +45,6 @@ class AutoApiController {
             $this->view->response("Error de servidor: ", 500);
         }
     }
-    
-
-    public function getAllDESC() {
-        try {
-            // Obtener todos los autos del modelo
-            $vehicles = $this->model->getAllDESC();
-            if ($vehicles) {
-                $response = [
-                    "status" => 200,
-                    "data" => $vehicles
-                ];
-                // Si hay autos, devolverlas con un código 200 (éxito)
-                $this->view->response($response, 200);
-            } else {
-                // Si no hay autos, devolver un mensaje con un código 404
-                $this->view->response("No hay autos en la base de datos", 404);
-            }
-        } catch (Exception) {
-            $this->view->response("Error de servidor", 500);
-        }
-    }
-    
 
 // traemos un auto por ID
     public function getAuto($params = null) {
@@ -187,8 +154,6 @@ public function borrarAuto($params = null) {
                 $inputData = json_decode(file_get_contents("php://input"));
 
                 $modelo = $inputData->modelo ?? $vehicle->modelo;
-
-                // Asignar los datos del vehículo desde la solicitud
                 $precio = $inputData->precio ?? $vehicle->precio;
                 $color = $inputData->color ?? $vehicle->color;
                 $vendido = $inputData->vendido ?? $vehicle->vendido;
