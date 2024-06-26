@@ -20,31 +20,49 @@ class AutoApiController {
         return json_decode($this->data);
     }
 
-    //traemos todos los autos
-    public function getAll() {
-        try {
-            $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : 'nombre';
-            $orderDir = isset($_GET['orderDir']) ? strtoupper($_GET['orderDir']) : 'ASC';
-            if ($orderDir != 'ASC' && $orderDir != 'DESC') {
-                $orderDir = 'ASC';
-            }
-            $vehicles = $this->model->getAll($orderBy, $orderDir);
-    
-            if ($vehicles) {
+   
+   // traemos todos los autos
+   public function getAll($params = []) {
+    try { 
+        // Verificar si no hay parámetros (devolver todos los vehículos)
+        if (empty($params)) {  
+            $vehicles = $this->model->getAll();
+            if (!empty($vehicles)) {
                 $response = [
                     "status" => 200,
-                    "data" => $vehicles,
+                    "data" => $vehicles
                 ];
-                // Si hay autos, devolverlos con un código 200 (éxito)
+                // Si hay autos, devolverlas con un código 200 (éxito)
                 $this->view->response($response, 200);
             } else {
                 // Si no hay autos, devolver un mensaje con un código 404
                 $this->view->response("No hay autos en la base de datos", 404);
             }
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor: ", 500);
+            
+        } elseif (isset($params[":orderBy"]) && isset($params[":orderDir"])) {
+            // Manejar ordenamiento y filtro
+            $vehicles = $this->model->getAllOrderBy($params[":orderBy"], $params[":orderDir"]);
+            if (!empty($vehicles)) {
+                $response = [
+                    "status" => 200,
+                    "data" => $vehicles
+                ];
+                $this->view->response($response, 200);
+            } else {
+                $this->view->response("No hay autos que coincidan con el criterio de ordenamiento", 404);
+            }
+        } else {
+            // Si los parámetros no coinciden con ninguno de los casos anteriores
+            $this->view->response("Parámetros no válidos", 400);
         }
+
+    } catch (Exception $e) {
+        $this->view->response("Error de servidor: " . $e->getMessage(), 500);
     }
+}
+
+
+    
 
 // traemos un auto por ID
     public function getAuto($params = null) {

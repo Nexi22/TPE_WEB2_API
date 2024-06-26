@@ -11,17 +11,18 @@
 
     $router->addRoute('autos', 'GET', 'AutoApiController', 'getAll');//traemos todos los autos
 
-    $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAuto');//traemos un auto
+    $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAuto');//traer autos por una marca especifica
 
     $router->addRoute('autos', 'POST', 'AutoApiController', 'addAuto');//agregamos un auto
 
     $router->addRoute('autos/:ID', 'DELETE', 'AutoApiController', 'borrarAuto');//borrar auto
 
+    $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
+    
     $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'autoVendido');//marcar como vendido el auto
 
-    $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAllxMarca');//traer autos por una marca especifica
 
-    $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
+    
 
 
     ////////// ROUTE DE MARCAS /////////////
