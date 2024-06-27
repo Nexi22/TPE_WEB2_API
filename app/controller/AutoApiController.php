@@ -20,33 +20,58 @@ class AutoApiController {
         return json_decode($this->data);
     }
 
-    //traemos todos los autos
     public function getAll() {
-        try {
-            $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : 'nombre';
-            $orderDir = isset($_GET['orderDir']) ? strtoupper($_GET['orderDir']) : 'ASC';
-            if ($orderDir != 'ASC' && $orderDir != 'DESC') {
-                $orderDir = 'ASC';
-            }
-            $vehicles = $this->model->getAll($orderBy, $orderDir);
+        $order = 'ASC'; // Valor predeterminado de orden ascendente
     
+        // Verificar si se especifica orden descendente
+        if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
+            $order = 'DESC';
+        }
+    
+        // Verificar filtros
+        if (isset($_GET['id_auto'])) {
+            $id_auto = $_GET['id_auto'];
+            $vehicle = $this->model->get($id_auto);
+            $this->view->response($vehicle, 200);
+
+        } elseif (isset($_GET['marca'])) {
+            $marca = $_GET['marca'];
+            $vehicles = $this->model->getAllByMarca($marca, $order);
+            $this->view->response($vehicles, 200);
+
+        } elseif (isset($_GET['precio'])) {
+            $precio = $_GET['precio'];
+            $vehicles = $this->model->getAllByPrecio($precio, $order);
+            $this->view->response($vehicles, 200);
+
+        } elseif (isset($_GET['anio'])) {
+            $anio = $_GET['anio'];
+            $vehicles = $this->model->getAllByAnio($anio, $order);
+            $this->view->response($vehicles, 200);
+
+        } elseif (isset($_GET['modelo'])) {
+            $modelo = $_GET['modelo'];
+            $vehicles = $this->model->getAllByModelo($modelo, $order);
+            $this->view->response($vehicles, 200);
+
+        } elseif (isset($_GET['color'])) {
+            $color = $_GET['color'];
+            $vehicles = $this->model->getAllByColor($color, $order);
+            $this->view->response($vehicles, 200);
+
+        } else {
+            // Si no se especifica ningún parámetro, obtener todos los vehículos con el orden especificado
+            $vehicles = $this->model->getAll($order);
             if ($vehicles) {
-                $response = [
-                    "status" => 200,
-                    "data" => $vehicles,
-                ];
-                // Si hay autos, devolverlos con un código 200 (éxito)
-                $this->view->response($response, 200);
+                $this->view->response($vehicles, 200);
             } else {
-                // Si no hay autos, devolver un mensaje con un código 404
-                $this->view->response("No hay autos en la base de datos", 404);
+                $this->view->response("NO HAY VEHICULOS EN LA BASE DE DATOS.", 404);
             }
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor: ", 500);
         }
     }
+    
 
-// traemos un auto por ID
+    // traemos un auto por ID
     public function getAuto($params = null) {
         $id = $params[':ID'];
         try {
@@ -122,26 +147,6 @@ public function borrarAuto($params = null) {
             $this->view->response("auto $id, no encontrado", 400);
         }
     }    
-
-    //traemos todos los vehiculos de una marca (lo hacemos por ID)
-    public function getAllxMarca($params = null) {
-        $id = $params[':ID'];
-        $vehicles = $this->model->getAllByMarca($id);
-        try {
-            if ($vehicles) {
-                $response = [
-                    "status" => 200,
-                    "data" => $vehicles
-                ];
-                $this->view->response($response, 200);
-            } else {
-                $this->view->response(["status" => 404, "message" => "No hay autos en la base de datos"], 404);
-            }
-        } catch (Exception $e) {
-            $this->view->response(["status" => 500, "message" => "Error de servidor"], 500);
-        }
-    }
-    
 
     // Editar un vehiculo
     public function editarVehiculo($params = NULL){

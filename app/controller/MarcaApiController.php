@@ -40,10 +40,6 @@ class MarcaApiController {
                 $response = [
                     "status" => 200,
                     "data" => $marcas,
-                    "totalMarcas" => $totalMarcas,
-                    "totalPages" => $totalPages,
-                    "currentPage" => $page,
-                    "pageSize" => $pageSize
                 ];
                 $this->view->response($response, 200);
             } else {
