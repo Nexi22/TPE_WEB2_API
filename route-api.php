@@ -17,6 +17,8 @@
 
     $router->addRoute('autos/:ID', 'DELETE', 'AutoApiController', 'borrarAuto');//borrar auto
 
+    $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
+    
     $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'autoVendido');//marcar como vendido el auto
 
     $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto

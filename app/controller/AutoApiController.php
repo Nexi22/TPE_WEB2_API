@@ -120,8 +120,8 @@ class AutoApiController {
     }
     
 
-//borrar auto
-public function borrarAuto($params = null) {
+    //borrar auto
+    public function borrarAuto($params = null) {
         $id = $params[':ID'];
         
         $vehicle = $this->model->get($id);
