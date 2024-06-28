@@ -1,18 +1,19 @@
 <?php
 require_once('app/model/VehicleModel.php');
 require_once('app/view/JSONView.php');
+require_once('app/model/marcaModel.php');
 
 class AutoApiController {
 
     private $model;
     private $view;
-
+    private $modelMarca;
     private $data;
 
     public function __construct() {
         $this->model = new VehicleModel();
         $this->view = new JSONView();
-
+        $this->modelMarca = new marcaModel();
         $this->data = file_get_contents("php://input");
     }
 
@@ -20,53 +21,17 @@ class AutoApiController {
         return json_decode($this->data);
     }
 
-    public function getAll() {
-        $order = 'ASC'; // Valor predeterminado de orden ascendente
-    
-        // Verificar si se especifica orden descendente
-        if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
-            $order = 'DESC';
+    public function getAll() {    
+        if (isset($_GET['atribute']) && isset($_GET['order'])) {
+            $vehicles = $this->model->getAll($_GET['atribute'], $_GET['order']);
+            
+        }else{
+            $vehicles = $this->model->getAll();  
         }
-    
-        // Verificar filtros
-        if (isset($_GET['id_auto'])) {
-            $id_auto = $_GET['id_auto'];
-            $vehicle = $this->model->get($id_auto);
-            $this->view->response($vehicle, 200);
-
-        } elseif (isset($_GET['marca'])) {
-            $marca = $_GET['marca'];
-            $vehicles = $this->model->getAllByMarca($marca, $order);
+        if($vehicles){
             $this->view->response($vehicles, 200);
-
-        } elseif (isset($_GET['precio'])) {
-            $precio = $_GET['precio'];
-            $vehicles = $this->model->getAllByPrecio($precio, $order);
-            $this->view->response($vehicles, 200);
-
-        } elseif (isset($_GET['anio'])) {
-            $anio = $_GET['anio'];
-            $vehicles = $this->model->getAllByAnio($anio, $order);
-            $this->view->response($vehicles, 200);
-
-        } elseif (isset($_GET['modelo'])) {
-            $modelo = $_GET['modelo'];
-            $vehicles = $this->model->getAllByModelo($modelo, $order);
-            $this->view->response($vehicles, 200);
-
-        } elseif (isset($_GET['color'])) {
-            $color = $_GET['color'];
-            $vehicles = $this->model->getAllByColor($color, $order);
-            $this->view->response($vehicles, 200);
-
-        } else {
-            // Si no se especifica ningún parámetro, obtener todos los vehículos con el orden especificado
-            $vehicles = $this->model->getAll($order);
-            if ($vehicles) {
-                $this->view->response($vehicles, 200);
-            } else {
-                $this->view->response("NO HAY VEHICULOS EN LA BASE DE DATOS.", 404);
-            }
+        }else{
+            $this->view->response("No hay vehiculos en la base de datos", 404);
         }
     }
     
@@ -104,18 +69,25 @@ class AutoApiController {
     //AGREGAR AUTO A LA BASE DE DATOS  
     public function addAuto() {
         $autoNuevo = $this->getData();
-    
-        $lastId = $this->model->insertar(
-            $autoNuevo->modelo, 
-            $autoNuevo->anio, 
-            $autoNuevo->precio,
-            $autoNuevo->color, 
-            $autoNuevo->id_marca 
-        );
-        if ($lastId) {
-            $this->view->response("Se insertó  el vehiculo correctamente con id: $lastId", 201);
-        } else {
-            $this->view->response("Error al insertar el registro", 500);
+
+       $marca= $this->modelMarca->get($autoNuevo->id_marca);
+        if($marca){
+
+            $lastId = $this->model->insertar(
+                $autoNuevo->modelo, 
+                $autoNuevo->anio, 
+                $autoNuevo->precio,
+                $autoNuevo->color, 
+                $autoNuevo->vendido,
+                $autoNuevo->id_marca 
+            );
+            if ($lastId) {
+                $this->view->response("Se insertó  el vehiculo correctamente con id: $lastId", 201);
+            } else {
+                $this->view->response("Error al insertar el registro", 404);
+            }
+        }else{
+            $this->view->response("No se puede agregar un vehiculo sin una marca existente", 404);
         }
     }
     
@@ -151,29 +123,34 @@ class AutoApiController {
     // Editar un vehiculo
     public function editarVehiculo($params = NULL){
         $id = $params[':ID'];
-        $vehicle = $this->model->get($id);
-
+        $editAuto = $this->getData();
+        $marca= $this->modelMarca->get($editAuto->id_marca);
+        $vehiculo = $this->model->get($id);
+        
         try {
-            if ($vehicle) {
-                // Obtén los datos enviados en la solicitud
-                $inputData = json_decode(file_get_contents("php://input"));
+            if($vehiculo){
+                if($marca){
+                    $modelo = $editAuto->modelo;
+                    $anio = $editAuto->anio;
+                    $precio = $editAuto->precio;
+                    $color = $editAuto->color;
+                    $vendido = $editAuto->vendido;
+                            
+                    // Actualizar el vehículo en la base de datos
+                    $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
+                    $this->view->response("Vehículo actualizado correctamente con id: $id", 201);
+                }else{
+                    $this->view->response("No existe la marca con id $editAuto->id_marca en la base de datos", 404);
+                }
+            }else{
+                $this->view->response("No existe el vehiculo en la base de datos", 404);
 
-                $modelo = $inputData->modelo ?? $vehicle->modelo;
-                $precio = $inputData->precio ?? $vehicle->precio;
-                $color = $inputData->color ?? $vehicle->color;
-                $vendido = $inputData->vendido ?? $vehicle->vendido;
-                $anio = $inputData->anio ?? $vehicle->anio;
-                
-                // Actualizar el vehículo en la base de datos
-                $this->model->edit($id, $modelo, $anio, $precio, $color, $vendido);
-                $this->view->response("Vehículo actualizado correctamente con id: $id", 201);
-                
-            } else {
-                $this->view->response("Vehículo no encontrado", 400);
             }
-        } catch (\Throwable $th) {
+        }catch (\Throwable $th) {
             // Manejo de errores
-            $this->view->response("Error al actualizar el vehículo: " . $th->getMessage(), 500);
+            $this->view->response("Error de conexión: " . $th->getMessage(), 500);
         }
-    }
+    } 
+
+
 }    

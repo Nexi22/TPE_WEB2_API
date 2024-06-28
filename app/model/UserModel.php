@@ -3,10 +3,15 @@ require_once "app/model/model.php";
 
 class UserModel extends model{
 
-    function getAll($order = 'ASC') {
+    function getAll($atribute = null, $order = null) {
         $db = $this->createConexion();
-        $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-        $consulta = $db->prepare("SELECT * FROM usuario ORDER BY id $orderSql");
+        //$orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        if($atribute){
+            $sql = "SELECT * FROM usuario ORDER BY $atribute $order";
+        }else{
+            $sql = "SELECT * FROM usuario";
+        }
+        $consulta = $db->prepare($sql);
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_OBJ);
     }
@@ -36,11 +41,9 @@ class UserModel extends model{
     //Añadir un usuario nuevo
     public function addUser($email, $password, $rol){
         try {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
             $db = $this->createConexion();
             $consulta = $db->prepare("INSERT INTO usuario (email, password, rol) VALUES (?, ?, ?)");
-            $consulta->execute([$email, $hashedPassword, $rol]);
+            $consulta->execute([$email, $password, $rol]);
     
             return $db->lastInsertId();
         } catch (PDOException $e) {

@@ -19,47 +19,20 @@ class MarcaApiController {
         return json_decode($this->data);
     }
 
-    //traemos todas las marcas
-    public function getAll() {
-        $order = 'ASC'; // Valor predeterminado de orden ascendente
-    
-        // Verificar si se especifica orden descendente
-        if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
-            $order = 'DESC';
+    //traemos todas las marcas    
+    public function getAll() {    
+        if (isset($_GET['atribute']) && isset($_GET['order'])) {
+            $marcas = $this->model->getAll($_GET['atribute'], $_GET['order']);
+            
+        }else{
+            $marcas = $this->model->getAll();  
         }
-    
-        // Verificar filtros
-        if (isset($_GET['id_marca'])) {
-            $marca = $_GET['id_marca'];
-            $marca = $this->model->get($marca);
-            $this->view->response($marca, 200);
-
-        } elseif (isset($_GET['nombre'])) {
-            $nombre = $_GET['nombre'];
-            $marca = $this->model->getAllByNombre($nombre, $order);
-            $this->view->response($marca, 200);
-
-        } elseif (isset($_GET['origen'])) {
-            $pais_de_origen = $_GET['origen'];
-            $marca = $this->model->getAllByOrigen($pais_de_origen, $order);
-            $this->view->response($marca, 200);
-
-        } elseif (isset($_GET['año'])) {
-            $anio = $_GET['año'];
-            $marca = $this->model->getAllByAno($anio, $order);
-            $this->view->response($marca, 200);
-
-        
-        } else {
-            // Si no se especifica ningún parámetro, obtener todos los vehículos con el orden especificado
-            $marca = $this->model->getAll($order);
-            if ($marca) {
-                $this->view->response($marca, 200);
-            } else {
-                $this->view->response("NO HAY MARCAS EN LA BASE DE DATOS.", 404);
-            }
+        if($marcas){
+            $this->view->response($marcas, 200);
+        }else{
+            $this->view->response("No hay vehiculos en la base de datos", 404);
         }
-    }  
+    }
     
     // traemos una marca por ID
     public function getMarca($params = null) {
@@ -108,7 +81,7 @@ class MarcaApiController {
     
         } catch (Exception $e) {
             // Manejo de errores en caso de excepción
-            $this->view->response("Error al insertar la marca: " . $e->getMessage(), 500);
+            $this->view->response("Error al insertar la marca: " . $e->getMessage(), 404);
         }
     }
     
@@ -129,18 +102,18 @@ class MarcaApiController {
 
     //Editar Marca
     public function editarMarca($params = NULL) {
-        try {
-            // Obtener el ID de la marca desde los parámetros
-            $id = $params[':ID'];
-            $marca = $this->model->get($id);
+        $id = $params[':ID'];
+        $editMarca = $this->getData();
+        $marca = $this->model->get($id);
 
+        try {
             if ($marca) {
-                $nombre = $marca->nombre;
-                $pais_de_origen = $marca->pais_de_origen; 
-                $ano_de_fundacion = $marca->ano_de_fundacion;
-                $descripcion = $marca->descripcion;
-            // Llamar al método edit en el modelo para actualizar la marca
-                $this->model->edit($id, $nombre, $pais_de_origen, $ano_de_fundacion, $descripcion);
+                $nombre = $editMarca->nombre;
+                $pais_de_origen = $editMarca->pais_de_origen; 
+                $ano_de_fundacion = $editMarca->ano_de_fundacion;
+                $descripcion = $editMarca->descripcion;
+
+                $this->model->edit($nombre, $pais_de_origen, $ano_de_fundacion, $descripcion, $id);
 
                 // Responder con un mensaje de éxito
                 $this->view->response("Marca actualizada correctamente", 200);
@@ -149,8 +122,7 @@ class MarcaApiController {
                 $this->view->response("No se encontró la marca", 404);
             }
         }   catch (Exception $e) {
-            // Manejo de errores en caso de excepción
-            $this->view->response("Error al editar la marca: " . $e->getMessage(), 500);
+            $this->view->response("Error de conexión: " . $e->getMessage(), 500);
         }
     }
 }   

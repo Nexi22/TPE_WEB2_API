@@ -6,10 +6,15 @@ class marcaModel extends model {
    
     
    //traemos todas las marcas
-   function getAll($order = 'ASC') {
+   function getAll($atribute = null, $order = null) {
     $db = $this->createConexion();
-    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $consulta = $db->prepare("SELECT * FROM marca ORDER BY id_marca $orderSql");
+    //$orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    if($atribute){
+        $sql = "SELECT * FROM marca ORDER BY $atribute $order";
+    }else{
+        $sql = "SELECT * FROM marca";
+    }
+    $consulta = $db->prepare($sql);
     $consulta->execute();
     return $consulta->fetchAll(PDO::FETCH_OBJ);
 }
@@ -24,45 +29,7 @@ function get($id){
         $marca = $sentencia->fetch(PDO::FETCH_OBJ);
         return $marca;
     }
-
-
-function getAllByNombre($nombre, $order = 'ASC') {
-    $db = $this->createConexion();
-    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $sentencia = $db->prepare("SELECT * FROM marca WHERE nombre = ? ORDER BY id_marca $orderSql");
-    $sentencia->execute([$nombre]);
-    return $sentencia->fetchAll(PDO::FETCH_OBJ);
-}
-
-function getAllByOrigen($pais_de_origen, $order = 'ASC') {
-    $db = $this->createConexion();
-    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $sentencia = $db->prepare("SELECT * FROM marca WHERE pais_de_origen = ? ORDER BY id_marca $orderSql");
-    $sentencia->execute([$pais_de_origen]);
-    return $sentencia->fetchAll(PDO::FETCH_OBJ);
-}
-
-
-function getAllByAno($ano_de_fundacion, $order = 'ASC') {
-    $db = $this->createConexion();
-    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $sentencia = $db->prepare("SELECT * FROM marca WHERE ano_de_fundacion = ? ORDER BY id_marca $orderSql");
-    $sentencia->execute([$ano_de_fundacion]);
-    return $sentencia->fetchAll(PDO::FETCH_OBJ);
-}
-
-
-    function getAllDESC(){
-        $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM marca ORDER BY id_marca DESC");
-        $consulta->execute();
-        $marcas = $consulta->fetchAll(PDO::FETCH_OBJ);
-        return $marcas;
-    }
-
-    //traemos una marca en especifico
     
-
     //insertamos una marca
     function insertar($nombre, $pais_de_origen, $ano_de_fundacion, $descripcion){
         //CREA LA CONEXION A LA DB

@@ -35,11 +35,23 @@ Esta API permite gestionar una colección de vehículos. Se puede obtener inform
 Obtiene una lista de todos los vehículos existentes en la base de datos.
 
 ### Obtener todos los vehículos
-- URL: localhost/TPE_WEB2_API/api/autos
+- URL: TPE_WEB2_API/api/autos
 - Método: GET
 
-#### Parámetros:
+A continuacíon se detalla imágen de la URL:
+
+![Imágen URL para uso en postman](img/autos/getAll.png)
+
+#### Parámetros query
+Los parametros son:
+- atribute
+- order
+
+#### El valor que puede tomar el order es el siguiente:
 - direccion (opcional): Orden de los resultados. Puede ser ASC (ascendente, valor predeterminado) o DESC (descendente).
+- asc
+- desc
+#### Los valores de atribute son los siguientes:
 - id_auto (opcional): Filtrar por ID del vehículo.
 - marca (opcional): Filtrar por marca del vehículo.
 - precio (opcional): Filtrar por precio del vehículo.
@@ -47,9 +59,14 @@ Obtiene una lista de todos los vehículos existentes en la base de datos.
 - modelo (opcional): Filtrar por modelo del vehículo.
 - color (opcional): Filtrar por color del vehículo.
 
+A continuacíon se detalla imágen de la URL:
+
+![Imágen URL para uso en postman](img/autos/getAll-atribute.png)
+
 #### Respuestas:
 - 200 OK: Lista de vehículos.
 - 404 Not Found: No hay vehículos en la base de datos.
+
 
 
 ## Función `getAuto()`
@@ -57,12 +74,12 @@ Obtiene una lista de todos los vehículos existentes en la base de datos.
 ### Descripción
 La función `getAuto` del controlador obtiene un vehiculo específico de la base de datos, para ello, se necesita especificarle el ID.
 
-### Obtener un vehículo por ID
-- URL: localhost/TPE_WEB2_API/api/autos?id_auto=1
-- Método: GET
-
-#### Parámetros:
+#### Parámetros de la función:
 - ID (obligatorio): ID del vehículo.
+
+### Obtener un vehículo por ID
+- URL: TPE_WEB2_API/api/autos/1
+- Método: GET
 
 #### Respuestas:
 - 200 OK: Información del vehículo.

@@ -11,7 +11,7 @@
 
     $router->addRoute('autos', 'GET', 'AutoApiController', 'getAll');//traemos todos los autos
 
-    // $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAuto');//traemos un auto
+    $router->addRoute('autos/:ID', 'GET', 'AutoApiController', 'getAuto');//traemos un auto
 
     $router->addRoute('autos', 'POST', 'AutoApiController', 'addAuto');//agregamos un auto
 

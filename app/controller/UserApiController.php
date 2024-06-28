@@ -18,36 +18,18 @@ class UserApiController {
     }
 
         //Traemos todos los usuarios
-        public function getAll() {
-            $order = 'ASC'; // Valor predeterminado de orden ascendente
-        
-            // Verificar si se especifica orden descendente
-            if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
-                $order = 'DESC';
+
+    public function getAll() {    
+        if (isset($_GET['atribute']) && isset($_GET['order'])) {
+                $user = $this->model->getAll($_GET['atribute'], $_GET['order']);
+                
+            }else{
+                $user = $this->model->getAll();  
             }
-            // Verificar filtros
-            if (isset($_GET['id'])) {
-                $id_usuario = $_GET['id'];
-                $usuario = $this->model->get($id_usuario);
-                $this->view->response($usuario, 200);
-    
-            } elseif (isset($_GET['email'])) {
-                $email = $_GET['email'];
-                $usuario = $this->model->getByEmail($email);
-                $this->view->response($usuario, 200);
-    
-            } elseif (isset($_GET['rol'])) {
-                $rol = $_GET['rol'];
-                $usuarios = $this->model->getAllByRol($rol, $order);
-                $this->view->response($usuarios, 200);
-            } else {
-                // Si no se especifica ningún parámetro, obtener todos los usuarios con el orden especificado
-                $usuarios = $this->model->getAll($order);
-                if ($usuarios) {
-                    $this->view->response($usuarios, 200);
-                } else {
-                    $this->view->response("NO HAY USUARIOS EN LA BASE DE DATOS.", 404);
-                }
+            if($user){
+                $this->view->response($user, 200);
+            }else{
+                $this->view->response("No hay vehiculos en la base de datos", 404);
             }
         }
 
@@ -58,7 +40,7 @@ class UserApiController {
             if($usuario){
                 $response = [
                 "status" => 200,
-                "message" => $usuario
+                "usuario" => $usuario
                 ];
                 $this->view->response($response, 200);
             }
@@ -78,10 +60,11 @@ class UserApiController {
 
     public function newUser() {
         $UsuarioNuevo = $this->getData();
+        $hashedPassword = password_hash($UsuarioNuevo->password, PASSWORD_DEFAULT);
     
         $lastId = $this->model->addUser(
             $UsuarioNuevo->email, 
-            $UsuarioNuevo->password, 
+            $hashedPassword, 
             $UsuarioNuevo->rol,
         );
         if ($lastId) {
