@@ -867,7 +867,111 @@ $this->view->response("usuario $id, no encontrado", 404);
 ```
 
 
-## Requisitos y notas adicionales
-- Modelo de tarea debe implementar los siguientes métodos `getTasks`, `getTask`.
-- Modelo de usuario debe implementar los siguientes métodos `getAllUsers`, `getUser`.
-- Vista que implemente el método `response`.
+
+
+
+
+
+
+# API de Gestión de Vehículos
+Esta API permite gestionar una base de datos de vehículos, incluyendo la obtención de información sobre vehículos, adición de nuevos vehículos, eliminación, actualización y marcación de vehículos como vendidos.
+
+## Endpoints
+
+### Obtener todos los vehículos
+URL: /autos
+Método: GET
+
+#### Parámetros:
+- direccion (opcional): Orden de los resultados. Puede ser ASC (ascendente, valor predeterminado) o DESC (descendente).
+- id_auto (opcional): Filtrar por ID del vehículo.
+- marca (opcional): Filtrar por marca del vehículo.
+- precio (opcional): Filtrar por precio del vehículo.
+- anio (opcional): Filtrar por año del vehículo.
+- modelo (opcional): Filtrar por modelo del vehículo.
+- color (opcional): Filtrar por color del vehículo.
+
+#### Respuestas:
+- 200 OK: Lista de vehículos.
+- 404 Not Found: No hay vehículos en la base de datos.
+
+### Obtener un vehículo por ID
+- URL: /autos/:ID
+- Método: GET
+
+#### Parámetros:
+- ID (obligatorio): ID del vehículo.
+
+#### Respuestas:
+- 200 OK: Información del vehículo.
+- 404 Not Found: No existe el vehículo en la base de datos.
+
+### Agregar un vehículo
+- URL: /autos
+- Método: POST
+- Cuerpo:
+```json
+{
+  "modelo": "string", //Cadena
+  "anio": "integer", //Entero
+  "precio": "float", //Decimal
+  "color": "string", //Cadena
+  "id_marca": "integer" //Entero
+}
+```
+#### Respuestas:
+- 201 Created: Vehículo agregado exitosamente.
+- 500 Internal Server Error: Error al insertar el registro.
+
+### Eliminar un vehículo
+- URL: /autos/:ID
+- Método: DELETE
+
+#### Parámetros:
+- ID (obligatorio): ID del vehículo.
+
+#### Respuestas:
+- 200 OK: Vehículo eliminado exitosamente.
+- 404 Not Found: Vehículo no encontrado.
+
+### Marcar un vehículo como vendido
+- URL: /autos/vendido/:ID
+- Método: PUT
+
+#### Parámetros:
+- ID (obligatorio): ID del vehículo.
+
+#### Respuestas:
+- 201 Created: Vehículo marcado como vendido.
+- 400 Bad Request: Vehículo no encontrado.
+
+### Editar un vehículo
+- URL: /autos/:ID
+- Método: PUT
+
+#### Parámetros:
+- ID (obligatorio): ID del vehículo.
+- Cuerpo para mandar la solicitud:
+```json
+{
+  "modelo": "string", //Cadena
+  "anio": "integer", //Entero
+  "precio": "float", //Decimal
+  "color": "string", //Cadena
+  "vendido": "boolean" //Verdadero o falso (0 es no vendido y 1 es vendido)
+}
+```
+#### Respuestas:
+- 201 Created: Vehículo actualizado exitosamente.
+- 400 Bad Request: Vehículo no encontrado.
+- 500 Internal Server Error: Error al actualizar el vehículo.
+
+# Uso con Postman
+Para probar esta API con Postman, necesitas tener instalado el XAMPP y tener tu proyecto guardado en la carpeta HTDOCS:
+
+- Obtener todos los vehículos: Crear una nueva solicitud GET a localhost/TPE_WEB2_API/api/autos.
+- Obtener un vehículo por ID: Crear una nueva solicitud GET a localhost/TPE_WEB2_API/api/autos?id_auto=1, reemplazando 1 con el ID del vehículo que quieras obtener de la base de datos.
+- Agregar un vehículo: Crear una nueva solicitud POST a localhost/TPE_WEB2_API/api/autos y agregar el JSON del cuerpo de la solicitud como se mostró anteriormente.
+- Eliminar un vehículo: Crear una nueva solicitud DELETE a localhost/TPE_WEB2_API/api/autos/1, reemplazando 1 con el ID del vehículo que se desea eliminar.
+- Marcar un vehículo como vendido: Crear una nueva solicitud PUT a localhost/TPE_WEB2_API/api/autos/1, reemplazando 1 con el ID del vehículo.
+- Editar un vehículo: Crear una nueva solicitud PUT a localhost/TPE_WEB2_API/api/autos/1, reemplazando 1 con el ID del vehículo y agregar el JSON del cuerpo de la solicitud para enviar la edición del vehiculo a la base de datos.
