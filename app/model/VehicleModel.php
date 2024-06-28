@@ -5,7 +5,6 @@ class VehicleModel extends model{
 
     function getAll($atribute = null, $order = null) {
         $db = $this->createConexion();
-        //$orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
         if($atribute){
             $sql = "SELECT * FROM auto ORDER BY $atribute $order";
         }else{
@@ -25,34 +24,19 @@ class VehicleModel extends model{
 
     //Agregar AUTO   
     function insertar($modelo, $anio, $precio, $color, $vendido, $id) {
-        //try {
-            $db = $this->createConexion();
-            $consulta = $db->prepare("INSERT INTO auto (modelo, anio, precio, color, vendido, id_marca) VALUES (?, ?, ?, ?, ?, ?)");
-            $consulta->execute([$modelo, $anio, $precio, $color, $vendido, $id]);
-            // Retornar el ID del último  insertado
-            return $db->lastInsertId();
-        //} catch (PDOException $e) {
-            // Manejo de excepciones
-            //error_log("Error en la inserción: " . $e->getMessage());
-            //return false;
-        //}
+        $db = $this->createConexion();
+        $consulta = $db->prepare("INSERT INTO auto (modelo, anio, precio, color, vendido, id_marca) VALUES (?, ?, ?, ?, ?, ?)");
+        $consulta->execute([$modelo, $anio, $precio, $color, $vendido, $id]);
+        // Retornar el ID del último  insertado
+        return $db->lastInsertId();
     }
-    
 
     //Borrar un vehiculo
     function delete($id){
         $db = $this->createConexion();
         $resultado= $db->prepare("DELETE FROM auto WHERE id_auto = ?");
         $resultado->execute([$id]); // ejecuta
-    }
-
-    //Vehiculo vendido
-    function vendido($id){ 
-        $db = $this->createConexion();
-        $resultado= $db->prepare("UPDATE auto SET vendido = ? WHERE id_auto = ?");
-        $resultado->execute([1,$id]); // ejecuta
-    }   
-
+    }  
 
     // Editar un vehiculo
     function edit($id, $modelo, $anio, $precio, $color, $vendido) {
@@ -60,6 +44,4 @@ class VehicleModel extends model{
         $resultado = $db->prepare("UPDATE auto SET modelo = ?, anio = ?, precio = ?, color = ?, vendido = ?  WHERE id_auto = ?");
         $resultado->execute([$modelo, $anio, $precio, $color, $vendido, $id]);
     }
-
- 
 }

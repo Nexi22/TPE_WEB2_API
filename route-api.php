@@ -18,9 +18,6 @@
     $router->addRoute('autos/:ID', 'DELETE', 'AutoApiController', 'borrarAuto');//borrar auto
 
     $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
-    
-    $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'autoVendido');//marcar como vendido el auto
-
 
     ////////// ROUTE DE MARCAS /////////////
 
@@ -33,8 +30,6 @@
     $router->addRoute('marcas/:ID', 'DELETE', 'MarcaApiController', 'borrarMarca');//borrar marca
     
     $router->addRoute('marcas/:ID', 'PUT', 'MarcaApiController', 'editarMarca');//editar marca
-
-
 
     ////////// ROUTE DE USUARIOS /////////////
 

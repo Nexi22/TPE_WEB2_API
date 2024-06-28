@@ -24,7 +24,6 @@ class AutoApiController {
     public function getAll() {    
         if (isset($_GET['atribute']) && isset($_GET['order'])) {
             $vehicles = $this->model->getAll($_GET['atribute'], $_GET['order']);
-            
         }else{
             $vehicles = $this->model->getAll();  
         }
@@ -84,13 +83,12 @@ class AutoApiController {
             if ($lastId) {
                 $this->view->response("Se insertó  el vehiculo correctamente con id: $lastId", 201);
             } else {
-                $this->view->response("Error al insertar el registro", 404);
+                $this->view->response("Error al insertar el vehiculo", 404);
             }
         }else{
             $this->view->response("No se puede agregar un vehiculo sin una marca existente", 404);
         }
     }
-    
 
     //borrar auto
     public function borrarAuto($params = null) {
@@ -105,20 +103,6 @@ class AutoApiController {
             $this->view->response("vehiculo $id, no encontrado", 404);
         }
     }
-
-    //marcar como vendido un auto 
-    public function autoVendido($params = null) {
-        $id = $params[':ID'];
-        $vehicle = $this->model->get($id);
-        if ($vehicle) {
-            $vendido = $vehicle->vendido;
-            $this->model->vendido($id);
-
-            $this->view->response("auto $vehicle, vendido", 201);
-        } else {
-            $this->view->response("auto $id, no encontrado", 400);
-        }
-    }    
 
     // Editar un vehiculo
     public function editarVehiculo($params = NULL){

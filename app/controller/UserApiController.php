@@ -53,7 +53,7 @@ class UserApiController {
     
             }
         } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
+            $this->view->response("Error del servidor", 500);
         }
     
     }  

@@ -30,7 +30,7 @@ class MarcaApiController {
         if($marcas){
             $this->view->response($marcas, 200);
         }else{
-            $this->view->response("No hay vehiculos en la base de datos", 404);
+            $this->view->response("No hay marcas en la base de datos", 404);
         }
     }
     
@@ -57,7 +57,7 @@ class MarcaApiController {
             }
         } catch (Exception $e) {
             // En caso de error del servidor, devolver un mensaje con un código 500 (error del servidor)
-            $this->view->response("Error de servidor", 500);
+            $this->view->response("Error del servidor", 500);
         }
 
     }  
