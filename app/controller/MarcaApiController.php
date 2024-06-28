@@ -30,9 +30,9 @@ class MarcaApiController {
     
         // Verificar filtros
         if (isset($_GET['id_marca'])) {
-            $id_auto = $_GET['id_marca'];
-            $marca = $this->model->get($id_auto);
-            $this->view->response($vehicle, 200);
+            $marca = $_GET['id_marca'];
+            $marca = $this->model->get($marca);
+            $this->view->response($marca, 200);
 
         } elseif (isset($_GET['nombre'])) {
             $nombre = $_GET['nombre'];
@@ -60,26 +60,6 @@ class MarcaApiController {
             }
         }
     }  
-
-    public function getAllDESC(){
-        try {
-            // Obtener todos los autos del modelo
-            $marcas = $this->model->getAllDESC();
-            if($marcas){
-                $response = [
-                "status" => 200,
-                "data" => $marcas
-               ];
-                $this->view->response($marcas, 200);
-          
-            }
-                
-            else
-                 $this->view->response("No hay marcas en la base de datos", 404);
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor", 500);
-        }
-    }
     
     // traemos una marca por ID
     public function getMarca($params = null) {
@@ -133,7 +113,7 @@ class MarcaApiController {
     }
     
 
-//borrar Marca
+    //Borrar Marca
     public function borrarMarca($params = null) {
         $id = $params[':ID'];
     
@@ -147,6 +127,7 @@ class MarcaApiController {
         }
     }
 
+    //Editar Marca
     public function editarMarca($params = NULL) {
         try {
             // Obtener el ID de la marca desde los parámetros

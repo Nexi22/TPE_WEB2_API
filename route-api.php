@@ -21,8 +21,6 @@
     
     $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'autoVendido');//marcar como vendido el auto
 
-    $router->addRoute('autos/:ID', 'PUT', 'AutoApiController', 'editarVehiculo');//editar auto
-
 
     ////////// ROUTE DE MARCAS /////////////
 
