@@ -3,31 +3,54 @@ require_once "app/model/model.php";
 
 class marcaModel extends model {
     
-    // Método para obtener las marcas paginadas
-    public function getPaginated($offset, $limit) {
-        $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM marca LIMIT :limit OFFSET :offset");
-        $consulta->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $consulta->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_OBJ);
-    }
-    
-    // Método para contar el número total de marcas
-    public function countAll() {
-        $db = $this->createConexion();
-        $consulta = $db->query("SELECT COUNT(*) as total FROM marca");
-        return $consulta->fetch(PDO::FETCH_OBJ)->total;
-    }
+   
     
    //traemos todas las marcas
-    function getAll(){
+   function getAll($order = 'ASC') {
+    $db = $this->createConexion();
+    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $consulta = $db->prepare("SELECT * FROM marca ORDER BY id_marca $orderSql");
+    $consulta->execute();
+    return $consulta->fetchAll(PDO::FETCH_OBJ);
+}
+
+
+function get($id){
+        //abrimos la conexion;
         $db = $this->createConexion();
-        $consulta = $db->prepare("SELECT * FROM marca");
-        $consulta->execute();
-        $marcas = $consulta->fetchAll(PDO::FETCH_OBJ);
-        return $marcas;
+        //Enviar la consulta
+        $sentencia = $db->prepare("SELECT * FROM marca WHERE id_marca = ?");
+        $sentencia->execute([$id]);
+        $marca = $sentencia->fetch(PDO::FETCH_OBJ);
+        return $marca;
     }
+
+
+function getAllByNombre($nombre, $order = 'ASC') {
+    $db = $this->createConexion();
+    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $sentencia = $db->prepare("SELECT * FROM marca WHERE nombre = ? ORDER BY id_marca $orderSql");
+    $sentencia->execute([$nombre]);
+    return $sentencia->fetchAll(PDO::FETCH_OBJ);
+}
+
+function getAllByOrigen($pais_de_origen, $order = 'ASC') {
+    $db = $this->createConexion();
+    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $sentencia = $db->prepare("SELECT * FROM marca WHERE pais_de_origen = ? ORDER BY id_marca $orderSql");
+    $sentencia->execute([$pais_de_origen]);
+    return $sentencia->fetchAll(PDO::FETCH_OBJ);
+}
+
+
+function getAllByAno($ano_de_fundacion, $order = 'ASC') {
+    $db = $this->createConexion();
+    $orderSql = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $sentencia = $db->prepare("SELECT * FROM marca WHERE ano_de_fundacion = ? ORDER BY id_marca $orderSql");
+    $sentencia->execute([$ano_de_fundacion]);
+    return $sentencia->fetchAll(PDO::FETCH_OBJ);
+}
+
 
     function getAllDESC(){
         $db = $this->createConexion();
@@ -38,15 +61,7 @@ class marcaModel extends model {
     }
 
     //traemos una marca en especifico
-    function get($id){
-        //abrimos la conexion;
-        $db = $this->createConexion();
-        //Enviar la consulta
-        $sentencia = $db->prepare("SELECT * FROM marca WHERE id_marca = ?");
-        $sentencia->execute([$id]);
-        $marca = $sentencia->fetch(PDO::FETCH_OBJ);
-        return $marca;
-    }
+    
 
     //insertamos una marca
     function insertar($nombre, $pais_de_origen, $ano_de_fundacion, $descripcion){
@@ -74,18 +89,7 @@ class marcaModel extends model {
     }
 
 
-    // //preguntar
-    // function getNombreMarca(){
-    //     //abrimos la conexion;
-    //     $db = $this->createConexion();
-    //     //Enviar la consulta
-    //     $sentencia = $db->prepare("SELECT id_marca, nombre FROM marca");
-    //     $sentencia->execute();
-    //     $marca = $sentencia->fetchAll(PDO::FETCH_OBJ);
-    //     return $marca;
-    // }
     
-   
     
 
     

@@ -28,23 +28,19 @@
 
     $router->addRoute('marcas', 'GET', 'MarcaApiController', 'getAll');//traemos todos las marcas
 
-    $router->addRoute('marcasDESC', 'GET', 'MarcaApiController', 'getAllDESC');//traemos todos las marcas de forma descendente
+    $router->addRoute('marcas/:ID', 'GET', 'MarcaApiController', 'getMarca');//traemos una marca en especifico
 
-    $router->addRoute('marca/:ID', 'GET', 'MarcaApiController', 'getMarca');//traemos una marca en especifico
+    $router->addRoute('marcas', 'POST', 'MarcaApiController', 'addMarca');//agregamos una marca
 
-    $router->addRoute('marca', 'POST', 'MarcaApiController', 'addMarca');//agregamos una marca
-
-    $router->addRoute('marca/:ID', 'DELETE', 'MarcaApiController', 'borrarMarca');//borrar marca
+    $router->addRoute('marcas/:ID', 'DELETE', 'MarcaApiController', 'borrarMarca');//borrar marca
     
-    $router->addRoute('editMarca/:ID', 'PUT', 'MarcaApiController', 'editarMarca');//editar marca
+    $router->addRoute('marcas/:ID', 'PUT', 'MarcaApiController', 'editarMarca');//editar marca
 
 
 
     ////////// ROUTE DE USUARIOS /////////////
-
+ //agregar DESC
     $router->addRoute('usuarios', 'GET', 'UserApiController', 'getAll');//traemos todos los usuarios
-
-    $router->addRoute('usuariosASC', 'GET', 'UserApiController', 'getAllASC');//traemos todos los usuarios de forma ascendente
 
     $router->addRoute('usuario/:ID', 'GET', 'UserApiController', 'getUsuario');//traemos un usuario
 

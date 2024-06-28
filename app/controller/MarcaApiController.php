@@ -21,34 +21,45 @@ class MarcaApiController {
 
     //traemos todas las marcas
     public function getAll() {
-        try {
-            // Obtener parámetros de paginación de la solicitud
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
+        $order = 'ASC'; // Valor predeterminado de orden ascendente
     
-            // Calcular el desplazamiento (offset) para la consulta SQL
-            $offset = ($page - 1) * $pageSize;
-    
-            // Obtener las marcas paginadas del modelo
-            $marcas = $this->model->getPaginated($offset, $pageSize);
-    
-            // Obtener el número total de marcas para calcular el total de páginas
-            $totalMarcas = $this->model->countAll();
-            $totalPages = ceil($totalMarcas / $pageSize);
-    
-            if ($marcas) {
-                $response = [
-                    "status" => 200,
-                    "data" => $marcas,
-                ];
-                $this->view->response($response, 200);
-            } else {
-                $this->view->response("No hay marcas en la base de datos", 404);
-            }
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor: " . $e->getMessage(), 500);
+        // Verificar si se especifica orden descendente
+        if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
+            $order = 'DESC';
         }
-    }    
+    
+        // Verificar filtros
+        if (isset($_GET['id_marca'])) {
+            $id_auto = $_GET['id_marca'];
+            $marca = $this->model->get($id_auto);
+            $this->view->response($vehicle, 200);
+
+        } elseif (isset($_GET['nombre'])) {
+            $nombre = $_GET['nombre'];
+            $marca = $this->model->getAllByNombre($nombre, $order);
+            $this->view->response($marca, 200);
+
+        } elseif (isset($_GET['origen'])) {
+            $pais_de_origen = $_GET['origen'];
+            $marca = $this->model->getAllByOrigen($pais_de_origen, $order);
+            $this->view->response($marca, 200);
+
+        } elseif (isset($_GET['año'])) {
+            $anio = $_GET['año'];
+            $marca = $this->model->getAllByAno($anio, $order);
+            $this->view->response($marca, 200);
+
+        
+        } else {
+            // Si no se especifica ningún parámetro, obtener todos los vehículos con el orden especificado
+            $marca = $this->model->getAll($order);
+            if ($marca) {
+                $this->view->response($marca, 200);
+            } else {
+                $this->view->response("NO HAY MARCAS EN LA BASE DE DATOS.", 404);
+            }
+        }
+    }  
 
     public function getAllDESC(){
         try {
