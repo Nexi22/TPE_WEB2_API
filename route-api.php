@@ -37,13 +37,13 @@
 
 
     ////////// ROUTE DE USUARIOS /////////////
- //agregar DESC
+
     $router->addRoute('usuarios', 'GET', 'UserApiController', 'getAll');//traemos todos los usuarios
 
-    $router->addRoute('usuario/:ID', 'GET', 'UserApiController', 'getUsuario');//traemos un usuario
+    $router->addRoute('usuarios/:ID', 'GET', 'UserApiController', 'getUsuario');//traemos un usuario
 
-    $router->addRoute('addUsuario', 'POST', 'UserApiController', 'newUser'); //añade un usuario a la base de datos
+    $router->addRoute('usuarios', 'POST', 'UserApiController', 'newUser'); //añade un usuario a la base de datos
 
-    $router->addRoute('usuario/:ID', 'DELETE', 'UserApiController', 'deleteUser');//borrar usuario
+    $router->addRoute('usuarios/:ID', 'DELETE', 'UserApiController', 'deleteUser');//borrar usuario
 
     $router->route($_GET["resource"], $_SERVER['REQUEST_METHOD']);

@@ -17,13 +17,10 @@
 
 
 3. [UserApiController](#documentación-userapicontroller)
-    - [Función `getAllUsers()`](#función-getallusers)
-    - [Funcion `getAllASC()`](#funcion-getallasc)
-    - [Función `getUsuario()`](#función-getusuario)
+    - [Función `getAll()`](#función-getall)
+    - [Funcion `getUsuario()`](#funcion-getusuario)
+    - [Función `newUser()`](#función-newuser)
     - [Función `deleteUser()`](#función-deletuser)
-
-3. [Requisitos y notas adicionales](#requisitos-y-notas-adicionales)
-
 ___
 
 # Documentación `AutoApiController`
@@ -291,20 +288,89 @@ Para probar esta API con Postman, necesitas tener instalado el XAMPP y tener tu 
 ## Introducción
 La clase UserApiController permite la gestión de usuarios a través de una API. Facilita la obtención de todos los usuarios, la obtención de un usuario específico por su ID, la adición de nuevos usuarios, la eliminación de usuarios existentes y la actualización de inseformación de usuarios. La clase utiliza un modelo para interactuar con la base de datos y una vista para devolver respuestas en formato JSON.
 
-## Función `getAllUsers()`
+## Función `getAll()`
 ### Descripción
 En esta función,  obtienen todos los usuarios existentes en la base de datos.
 
+## Endpoints
 
-## Función `getAllASC()`
+### Obtener todos los usuarios
+- URL: /usuarios
+- Método: GET
 
-### Descripción
-Esta función está dedicada a la peticion de todos los usuarios existentes en la base de datos, pero de forma ascendente. Para ello se necesita el ID.
+#### Parámetros:
+- direccion (opcional): Orden de los resultados. Puede ser ASC (ascendente, valor predeterminado) o DESC (descendente).
+- id (opcional): Filtrar por ID del usuario.
+- email (opcional): Filtrar por correo electrónico del usuario.
+- rol (opcional): Filtrar por rol del usuario.
 
+#### Respuestas:
+200 OK: Lista de usuarios.
+404 Not Found: No hay usuarios en la base de datos.
 
 ## Función `getUsuario()`
+
 ### Descripción
-En esta función, se obtiene un usuario en especifico de la base de datos. Para ello se requiere especificar en la URL el ID.
+Esta función está dedicada a la obtención de todos un usuario en especifico en la base de datos, para ello se requiere el ID en la URL.
+
+### Obtener un usuario por ID
+- URL: /usuarios/:ID
+- Método: GET
+
+#### Parámetros:
+- ID (obligatorio): ID del usuario.
+
+#### Respuestas:
+- 200 OK: Información del usuario.
+- 404 Not Found: No existe el usuario en la base de datos.
+
+
+## Función `newUser()`
+
+### Descripción
+La finalidad de esta función es crear un usuario en la base de datos. Se requiere enviar toda la info en formato JSON.
+
+### Agregar un nuevo usuario
+- URL: /usuarios
+- Método: POST
+Cuerpo:
+```json
+{
+  "email": "string",
+  "password": "string",
+  "rol": "string"
+}
+```
+#### Respuestas:
+- 201 Created: Usuario agregado exitosamente.
+- 500 Internal Server Error: Error al insertar el usuario.
+
+## Función `deleteUser()`
+
+### Descripción
+Con esta función, vas a poder borrar un usuario existente en la base de datos. Se requiere especificar el ID en la URL.
+
+### Eliminar un usuario
+- URL: /usuarios/:ID
+- Método: DELETE
+
+#### Parámetros:
+- ID (obligatorio): ID del usuario.
+
+#### Respuestas:
+- 200 OK: Usuario eliminado exitosamente.
+- 404 Not Found: Usuario no encontrado.
+
+# Uso con Postman
+Para probar esta API con Postman, necesitas tener instalado el XAMPP y tener tu proyecto guardado en la carpeta HTDOCS:
+
+- Obtener todos los usuarios: Crear una nueva solicitud GET a localhost/TPE_WEB2_API/api/usuarios/.
+
+- Obtener un usuario por ID: Crear una nueva solicitud GET a localhost/TPE_WEB2_API/api/usuarios/1, reemplazando 1 con el ID del usuario.
+
+- Agregar un nuevo usuario: Crear una nueva solicitud POST a localhost/TPE_WEB2_API/api/usuarios/ y agregar el JSON del cuerpo de la solicitud.
+
+- Eliminar un usuario: Crear una nueva solicitud DELETE a localhost/TPE_WEB2_API/api/usuarios/1, reemplazando 1 con el ID del usuario.
 
 
 

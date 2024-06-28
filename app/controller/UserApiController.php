@@ -18,60 +18,38 @@ class UserApiController {
     }
 
         //Traemos todos los usuarios
-    public function getAll() {
-        try {
-            // Obtener parámetros de paginación de la solicitud
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
-
-            // Calcular el desplazamiento (offset) para la consulta SQL
-            $offset = ($page - 1) * $pageSize;
-
-            // Obtener los usuarios paginados del modelo
-            $users = $this->model->getPaginated($offset, $pageSize);
-
-            // Obtener el número total de usuarios para calcular el total de páginas
-            $totalUsers = $this->model->countAll();
-            $totalPages = ceil($totalUsers / $pageSize);
-
-            if ($users) {
-                $response = [
-                    "status" => 200,
-                    "data" => $users,
-                    "totalUsers" => $totalUsers,
-                    "totalPages" => $totalPages,
-                    "currentPage" => $page,
-                    "pageSize" => $pageSize
-                ];
-                $this->view->response($response, 200);
-            } else {
-                $this->view->response("No hay usuarios en la base de datos", 404);
+        public function getAll() {
+            $order = 'ASC'; // Valor predeterminado de orden ascendente
+        
+            // Verificar si se especifica orden descendente
+            if (isset($_GET['direccion']) && strtolower($_GET['direccion']) === 'desc') {
+                $order = 'DESC';
             }
-        } catch (Exception $e) {
-            $this->view->response("Error de servidor: " . $e->getMessage(), 500);
-        }
-    }
-
-    //Traemos todos los usuarios de forma ascendente
-    public function getAllASC() {
-        try {
-            // Obtener todos los usuarios del modelo
-            $users = $this->model->getAllASC();
-            if ($users) {
-                $response = [
-                    "status" => 200,
-                    "data" => $users
-                ];
-                // Si hay usuarios, devolverlos con un código 200 (éxito)
-                $this->view->response($response, 200);
+            // Verificar filtros
+            if (isset($_GET['id'])) {
+                $id_usuario = $_GET['id'];
+                $usuario = $this->model->get($id_usuario);
+                $this->view->response($usuario, 200);
+    
+            } elseif (isset($_GET['email'])) {
+                $email = $_GET['email'];
+                $usuario = $this->model->getByEmail($email);
+                $this->view->response($usuario, 200);
+    
+            } elseif (isset($_GET['rol'])) {
+                $rol = $_GET['rol'];
+                $usuarios = $this->model->getAllByRol($rol, $order);
+                $this->view->response($usuarios, 200);
             } else {
-                // Si no hay usuarios, devolver un mensaje con un código 404
-                $this->view->response("No hay usuarios en la base de datos", 404);
+                // Si no se especifica ningún parámetro, obtener todos los usuarios con el orden especificado
+                $usuarios = $this->model->getAll($order);
+                if ($usuarios) {
+                    $this->view->response($usuarios, 200);
+                } else {
+                    $this->view->response("NO HAY USUARIOS EN LA BASE DE DATOS.", 404);
+                }
             }
-        } catch (Exception) {
-            $this->view->response("Error de servidor", 500);
         }
-    }
 
     public function getUsuario($params = null) {
         $id = $params[':ID'];
@@ -83,7 +61,6 @@ class UserApiController {
                 "message" => $usuario
                 ];
                 $this->view->response($response, 200);
-    
             }
             else{
                 $response = [
@@ -98,7 +75,6 @@ class UserApiController {
         }
     
     }  
-
 
     public function newUser() {
         $UsuarioNuevo = $this->getData();
