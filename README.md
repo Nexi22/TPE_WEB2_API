@@ -286,7 +286,7 @@ Para probar esta API con Postman, necesitas tener instalado el XAMPP y tener tu 
 
 # Documentación `UserApiController`
 ## Introducción
-La clase UserApiController permite la gestión de usuarios a través de una API. Facilita la obtención de todos los usuarios, la obtención de un usuario específico por su ID, la adición de nuevos usuarios, la eliminación de usuarios existentes y la actualización de inseformación de usuarios. La clase utiliza un modelo para interactuar con la base de datos y una vista para devolver respuestas en formato JSON.
+La clase UserApiController permite la gestión de usuarios a través de una API. Facilita la obtención de todos los usuarios, la obtención de un usuario específico por su ID, por email o rol (user o admin), la adición de nuevos usuarios y la eliminación de usuarios existentes. La clase utiliza un modelo para interactuar con la base de datos y una vista para devolver respuestas en formato JSON.
 
 ## Función `getAll()`
 ### Descripción
