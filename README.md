@@ -136,14 +136,16 @@ Como resultado de esta función, se edita la totalidad de los atributos del vehi
 ### Editar un vehículo
 - URL: TPE_WEB2_API/api/autos/1
 - Método: PUT
+- Cuerpo que se necesita para enviar la solicitud:
 
-A continuacíon se detalla imágen de la URL:
+![Imágen URL para uso en postman](img/autos/JSONeditar.png)
+
+- A continuacíon se detalla imágen de la URL:
 
 ![Imágen URL para uso en postman](img/autos/editarVehiculo.png)
 
 #### Parámetros:
 - ID (obligatorio): ID del vehículo.
-- Cuerpo para mandar la solicitud:
 ```json
 {
   "modelo": "string", //Cadena
@@ -153,9 +155,6 @@ A continuacíon se detalla imágen de la URL:
   "vendido": "boolean" //Verdadero o falso (0 es no vendido y 1 es vendido)
 }
 ```
-- Cuerpo que se necesita para enviar la solicitud:
-
-![Imágen URL para uso en postman](img/autos/JSONeditar.png)
 
 #### Respuestas:
 - 201 Created: Vehículo actualizado correctamente.
